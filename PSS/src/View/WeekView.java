@@ -17,7 +17,7 @@ import javafx.scene.shape.Line;
 import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class WeekView extends AbstractMenu {
     private final double CELL_HEIGHT = 50, CELL_WIDTH = 100;
@@ -42,7 +42,7 @@ public class WeekView extends AbstractMenu {
     }
     
     //constructor to load into specific date
-    WeekView(Stage stage, Date date, ArrayList<Task> tasks) {
+    WeekView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
         super(date);
         
         this.stage = stage;
@@ -183,13 +183,12 @@ public class WeekView extends AbstractMenu {
     
     //add boxes for tasks on calendar
     public void drawTasks() {
-        calendar.setGridLinesVisible(true);
         for(Task task : tasks) {
             //get grid indexes, height of box, and offset of the start of the box
-            int row = task.getStartDate().getHours();
-            int column = task.getStartDate().getDay() + 1;
-            double height = (CELL_HEIGHT / 4) * (task.getDuration() / 15);
-            double offset = (CELL_HEIGHT / 4) * (task.getStartDate().getMinutes() / 15);
+            int row = task.getStartTime().getHour();
+            int column = task.getStartDate().getDayOfWeek().getValue() + 1;
+            double height = (CELL_HEIGHT / 4) * (task.getDuration() / 15) + 1;
+            double offset = (CELL_HEIGHT / 4) * (task.getStartTime().getMinute() / 15) - 1;
             
             //rectangle to add to calendar
             Rectangle rect = new Rectangle(CELL_WIDTH, height);
@@ -202,8 +201,13 @@ public class WeekView extends AbstractMenu {
             label.setOnMouseClicked(v -> addTask(task));
             label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");
             
+            //need to add box to a pane first or it wouldn't draw right
+            Pane p = new Pane();
+            p.getChildren().add(label);
+            label.setTranslateY(offset);
+            
             //add box to calendar, the math expression determines the column span and thankfully applies the right offset to the rectangle
-            calendar.add(label, column, row, 1, (int)Math.floor((height + offset) / CELL_HEIGHT) + 1);
+            calendar.add(p, column, row, 1, (int)Math.floor((height + offset) / CELL_HEIGHT) + 1);
         }
     }
 }

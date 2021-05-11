@@ -4,7 +4,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import java.util.Locale;
-import java.util.Date;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -13,6 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.converter.LocalTimeStringConverter;
 import java.util.ArrayList;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -26,9 +26,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.WeekFields;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 
 public abstract class AbstractMenu {
 	//scene and stage for each view, list of tasks, mini month calendar view, drop box to select view, and info needed to create a new task
@@ -40,11 +43,12 @@ public abstract class AbstractMenu {
 	protected ComboBox<String> select;
 	protected LocalDate date;
 	protected int numOfWeeks, firstDay;
-	protected Button left, right, addTask, cancel, create;
+	protected Button left, right, addTask, close, create, cancelTask;
 	protected final int MINI_SIZE = 35;
 	protected TextField name, duration;
 	protected CheckBox repeat;
 	protected DatePicker startDate, endDate;
+	protected Spinner<LocalTime> startTime, endTime;
 	
 	//constructor to load into present date
 	AbstractMenu() {
@@ -83,12 +87,12 @@ public abstract class AbstractMenu {
     }
 	
 	//constructor to load into specific date
-	AbstractMenu(Date date) {
+	AbstractMenu(LocalDate date) {
 	    pane = new BorderPane();
 	    rightPane = new BorderPane();
         select = new ComboBox<>();
         select.getItems().addAll("Day", "Week", "Month");
-        this.date = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        this.date = date;
         
         WeekFields weekFields = WeekFields.of(new Locale("en"));
         LocalDate start = this.date.withDayOfMonth(1), end = this.date.withDayOfMonth(this.date.lengthOfMonth());
@@ -184,10 +188,15 @@ public abstract class AbstractMenu {
         pane.setRight(null);
     }
     
+    public LocalTime round15Mins(LocalTime time) {
+        int round = time.getMinute() % 15;
+        return time = time.plusMinutes(round < 8 ? -round : (15-round));
+    }
+    
     //show view to add a new task
     public void addTask() {
         //initialize controls
-        cancel = new Button("Cancel");
+        close = new Button("Close");
         create = new Button("Create");
         name = new TextField();
         duration = new TextField();
@@ -195,18 +204,59 @@ public abstract class AbstractMenu {
         startDate = new DatePicker(date);
         endDate = new DatePicker(date);
         
-        //hide end date selector and set repeat to false
-        endDate.setVisible(false);
-        repeat.setSelected(false);
-        
-        //listener to show end date selector if set to repeat
-        repeat.selectedProperty().addListener(v -> {
-           if(repeat.isSelected()) {
-               endDate.setVisible(true);
-           } else {
-               endDate.setVisible(false);
-           }
+        startTime = new Spinner<>(new SpinnerValueFactory<>() {
+            @Override
+            public void decrement(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.minusMinutes(15));
+                }
+            }
+
+            @Override
+            public void increment(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.plusMinutes(15));
+                }
+            }
         });
+        
+        endTime = new Spinner<>(new SpinnerValueFactory<>() {
+            @Override
+            public void decrement(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.minusMinutes(15));
+                }
+            }
+
+            @Override
+            public void increment(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.plusMinutes(15));
+                }
+            }
+        });
+        
+        //hide end date selector and set repeat to false
+        repeat.setSelected(false);
+        startTime.setEditable(true);
+        endTime.setEditable(true);
+        
+        startTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
+        endTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
+        startTime.getValueFactory().setValue(round15Mins(LocalTime.now()));
+        endTime.getValueFactory().setValue(round15Mins(LocalTime.now()));
         
         //only allow numbers to be entered into the duration field
         duration.textProperty().addListener(new ChangeListener<String>() {
@@ -219,55 +269,111 @@ public abstract class AbstractMenu {
         });
         
         //add labels for name and duration text fields
-        Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration);
+        Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
+                startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
+                startTimeLabel = new Label("Start Time: ", startTime), endTimeLabel = new Label("End Time: ", endTime);
         nameLabel.setContentDisplay(ContentDisplay.RIGHT);
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
+        startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
+        endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
+        startTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
+        endTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
         
         //group buttons together
         HBox buttons = new HBox(10);
         buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(cancel, create);
+        buttons.getChildren().addAll(close, create);
+        
+        endDateLabel.setVisible(false);
+        endTimeLabel.setVisible(false);
+        
+        //listener to show end date selector if set to repeat
+        repeat.selectedProperty().addListener(v -> {
+           if(repeat.isSelected()) {
+               endDateLabel.setVisible(true);
+               endTimeLabel.setVisible(true);
+           } else {
+               endDateLabel.setVisible(false);
+               endTimeLabel.setVisible(false);
+           }
+        });
         
         //build final pane
         VBox taskPane = new VBox(10);
         taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDate, durationLabel, repeat, endDate, buttons);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endTimeLabel, endDateLabel, buttons);
         taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
         rightPane.setCenter(taskPane);
         
         //close pane when cancel button pressed
-        cancel.setOnAction(event -> rightPane.setCenter(null));
+        close.setOnAction(event -> rightPane.setCenter(null));
     }
     
     //display a task with option to edit task info
     public void addTask(Task task) {
         //initialize controls
-        cancel = new Button("Cancel");
+        close = new Button("Close");
+        cancelTask = new Button("Cancel Task");
         create = new Button("Edit");
         name = new TextField(task.getName());
         duration = new TextField(Integer.toString(task.getDuration()));
         repeat = new CheckBox("Repeat");
-        startDate = new DatePicker(LocalDate.ofInstant(task.getStartDate().toInstant(), ZoneId.systemDefault()));
-        endDate = new DatePicker(LocalDate.ofInstant(task.getEndDate().toInstant(), ZoneId.systemDefault()));
-        repeat.setSelected(task.getRepeat());
+        startDate = new DatePicker(task.getStartDate());
+        endDate = new DatePicker(task.getEndDate());
         
-        //show/hide end date selector based on whether the task is set to repeat
-        if(task.getRepeat()) {
-            endDate.setVisible(true);
-        } else {
-            endDate.setVisible(false);
-        }
-        
-        //listener to show end date selector if set to repeat
-        repeat.selectedProperty().addListener(v -> {
-           if(repeat.isSelected()) {
-               endDate.setVisible(true);
-           } else {
-               endDate.setVisible(false);
-           }
+        startTime = new Spinner<>(new SpinnerValueFactory<>() {
+            @Override
+            public void decrement(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.minusMinutes(15));
+                }
+            }
+
+            @Override
+            public void increment(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.plusMinutes(15));
+                }
+            }
         });
+        
+        endTime = new Spinner<>(new SpinnerValueFactory<>() {
+            @Override
+            public void decrement(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.minusMinutes(15));
+                }
+            }
+
+            @Override
+            public void increment(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.plusMinutes(15));
+                }
+            }
+        });
+        
+        startTime.setEditable(true);
+        endTime.setEditable(true);
+        startTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
+        endTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
+        startTime.getValueFactory().setValue(task.getStartTime());
+        endTime.getValueFactory().setValue(task.getEndTime());
+        repeat.setSelected(task.getRepeat());
         
         //only allow numbers to be entered into the duration field
         duration.textProperty().addListener(new ChangeListener<String>() {
@@ -280,26 +386,52 @@ public abstract class AbstractMenu {
         });
         
         //add labels for name and duration text fields
-        Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration);
+        Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
+                startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
+                startTimeLabel = new Label("Start Time: ", startTime), endTimeLabel = new Label("End Time: ", endTime);
         nameLabel.setContentDisplay(ContentDisplay.RIGHT);
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
+        startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
+        endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
+        startTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
+        endTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
         
         //group buttons together
         HBox buttons = new HBox(10);
         buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(cancel, create);
+        buttons.getChildren().addAll(close, cancelTask, create);
+        
+        //show/hide end date selector based on whether the task is set to repeat
+        if(task.getRepeat()) {
+            endDateLabel.setVisible(true);
+            endTimeLabel.setVisible(true);
+        } else {
+            endDateLabel.setVisible(false);
+            endTimeLabel.setVisible(false);
+        }
+        
+        //listener to show end date selector if set to repeat
+        repeat.selectedProperty().addListener(v -> {
+           if(repeat.isSelected()) {
+               endDateLabel.setVisible(true);
+               endTimeLabel.setVisible(true);
+           } else {
+               endDateLabel.setVisible(false);
+               endTimeLabel.setVisible(false);
+           }
+        });
         
         //build final pane
         VBox taskPane = new VBox(10);
         taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDate, durationLabel, repeat, endDate, buttons);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, endTimeLabel, buttons);
         taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
         rightPane.setCenter(taskPane);
         
         //close pane when cancel button pressed
-        cancel.setOnAction(event -> rightPane.setCenter(null));
+        close.setOnAction(event -> rightPane.setCenter(null));
     }
     
     //popup error message
@@ -362,8 +494,12 @@ public abstract class AbstractMenu {
 	    return addTask;
 	}
 	
-	public Button getCancel() {
-	    return cancel;
+	public Button getClose() {
+	    return close;
+	}
+	
+	public Button getCancelTask() {
+	    return cancelTask;
 	}
 	
 	public Button getCreate() {
@@ -380,6 +516,22 @@ public abstract class AbstractMenu {
 	
 	public boolean getRepeat() {
 	    return repeat.isSelected();
+	}
+	
+	public LocalDate getStartDate() {
+	    return startDate.getValue();
+	}
+	
+	public LocalDate getEndDate() {
+	    return endDate.getValue();
+	}
+	
+	public LocalTime getStartTime() {
+	    return startTime.getValue();
+	}
+	
+	public LocalTime getEndTime() {
+	    return endTime.getValue();
 	}
     
     public ComboBox<String> getSelect() {

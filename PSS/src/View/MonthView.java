@@ -18,7 +18,6 @@ import javafx.scene.layout.BorderPane;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import javafx.scene.layout.StackPane;
-import java.util.Date;
 
 public class MonthView extends AbstractMenu {
     private final double HEADER_HEIGHT = 50, CELL_WIDTH = 765 / 7, CELL_HEIGHT;
@@ -49,7 +48,7 @@ public class MonthView extends AbstractMenu {
     }
     
     //constructor to load into specific date
-    MonthView(Stage stage, Date date, ArrayList<Task> tasks) {
+    MonthView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
         super(date);
         
         this.stage = stage;
@@ -107,7 +106,7 @@ public class MonthView extends AbstractMenu {
             //make the empty cells for each day of the week
             for(int j = 0; j < 7; j++) {
               //used to make calendar look nice
-                VBox dayBox = new VBox(1);
+                VBox dayBox = new VBox();
                 dayBox.setPrefSize(CELL_WIDTH, CELL_HEIGHT);
                 dayBox.setMinSize(CELL_WIDTH, CELL_HEIGHT);
                 dayBox.setMaxSize(CELL_WIDTH, CELL_HEIGHT);
@@ -175,7 +174,7 @@ public class MonthView extends AbstractMenu {
             
             //only show the first 5 tasks of a given day, then show a counter in top left for how many more tasks there are that day
             //checks > 6 to account for the child node used to show the date
-            if(nodes[row][column].getChildren().size() > 6) {
+            if(nodes[row][column].getChildren().size() > 4) {
                 //get excess counter pane for given date
                 StackPane stack = (StackPane) extras[row][column].getLeft();
                 stack.setVisible(true);
@@ -192,9 +191,9 @@ public class MonthView extends AbstractMenu {
                 text.setText("+" + num);
             } else {
                 //new rectangle to show one of the first 5 tasks
-                Rectangle rect = new Rectangle(CELL_WIDTH, 10);
+                Rectangle rect = new Rectangle(CELL_WIDTH, 12);
                 rect.setFill(Color.BLUE);
-                rect.setOpacity(0.2);
+                rect.setOpacity(0.5);
                 Label label;
                 
                 //limit the length of the name
@@ -207,6 +206,7 @@ public class MonthView extends AbstractMenu {
                 //add on click listener to the label to show the task details/edit the task, and add the to calendar
                 label.setContentDisplay(ContentDisplay.CENTER);
                 label.setOnMouseClicked(v -> addTask(task));
+                label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");
                 nodes[row][column].getChildren().add(label);
             }
         }

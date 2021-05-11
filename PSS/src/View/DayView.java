@@ -16,12 +16,11 @@ import javafx.scene.shape.Line;
 import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 import java.lang.Math;
 import java.time.format.TextStyle;
-
 import javafx.scene.paint.Color;
+import java.time.LocalDate;
 
 public class DayView extends AbstractMenu {
     private final double CELL_HEIGHT = 50, CELL_WIDTH = 100;
@@ -46,7 +45,7 @@ public class DayView extends AbstractMenu {
     }
     
     //constructor to load into specific date
-    DayView(Stage stage, Date date, ArrayList<Task> tasks) {
+    DayView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
         super(date);
         
         this.stage = stage;
@@ -181,14 +180,14 @@ public class DayView extends AbstractMenu {
     public void drawTasks() {
         for(Task task : tasks) {
             //get grid index, height of box, and offset of the start of the box
-            int row = task.getStartDate().getHours();
-            double height = (CELL_HEIGHT / 4) * (task.getDuration() / 15);
-            double offset = (CELL_HEIGHT / 4) * (task.getStartDate().getMinutes() / 15);
+            int row = task.getStartTime().getHour();
+            double height = (CELL_HEIGHT / 4) * (task.getDuration() / 15) + 1;
+            double offset = (CELL_HEIGHT / 4) * (task.getStartTime().getMinute() / 15) - 1;
             
             //rectangle to add to calendar
             Rectangle rect = new Rectangle(7 * CELL_WIDTH, height);
             rect.setFill(Color.BLUE);
-            rect.setOpacity(0.2);
+            rect.setOpacity(0.5);
             
             //label with task name, and on click listener to show task details/edit task
             Label label = new Label(task.getName(), rect);
@@ -196,8 +195,13 @@ public class DayView extends AbstractMenu {
             label.setOnMouseClicked(v -> addTask(task));
             label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");
             
+            //need to add box to a pane first or it wouldn't draw right
+            Pane p = new Pane();
+            p.getChildren().add(label);
+            label.setTranslateY(offset);
+            
             //add box to calendar, the math expression determines the column span and thankfully applies the right offset to the rectangle
-            calendar.add(label, 1, row, 1, (int)Math.floor((height + offset) / 50) + 1);
+            calendar.add(p, 1, row, 1, (int)Math.floor((height + offset) / 50) + 1);
         }
     }
 }

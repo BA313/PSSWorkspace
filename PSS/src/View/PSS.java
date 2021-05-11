@@ -2,15 +2,16 @@ package pss;
 
 import javafx.application.Application;
 import java.util.ArrayList;
-import java.util.Date;
 import javafx.stage.Stage;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class PSS extends Application {
     private DayView day;
     private WeekView week;
     private MonthView month;
     private Stage stage;
-    private Date date;
+    private LocalDate date;
     private ArrayList<Task> tasks = new ArrayList<>();
     
     public static void main(String[] args) {
@@ -19,47 +20,36 @@ public class PSS extends Application {
 
     @Override
     public void start(Stage stage)  {
-        date = new Date();
+        date = LocalDate.now();
         this.stage = stage;
         
-        Date testStart = new Date(121, 4, 10, 0, 15, 0);
-        Date testEnd = Date.from(testStart.toInstant());
-        testEnd.setMinutes(testEnd.getMinutes() + 90);
-        tasks.add(new Task("A", testStart, testEnd, 90, false));
+        LocalTime start = LocalTime.now().withHour(0).withMinute(15);
+        LocalTime end = LocalTime.from(start).plusMinutes(90);
+        tasks.add(new Task("A", date, date, 90, false, start, end));
         
-        /*testStart.setHours(3);
-        testStart.setMinutes(30);
-        testEnd.setHours(3);
-        testEnd.setMinutes(45);*/
-        Date testStart1 = new Date(121, 4, 10, 3, 30, 0);
-        Date testEnd1 = Date.from(testStart1.toInstant());
-        testEnd1.setMinutes(testEnd1.getMinutes() + 15);
-        tasks.add(new Task("B", testStart1, testEnd1, 15, true));
+        start = LocalTime.now().withHour(3).withMinute(30);
+        end = LocalTime.from(start).plusMinutes(15);
+        tasks.add(new Task("B", date, date, 15, true, start, end));
         
-        /*testStart = new Date(121, 4, 10, 5, 45, 0);
-        testEnd = Date.from(testStart.toInstant());
-        testEnd.setMinutes(testEnd.getMinutes() + 45);
-        tasks.add(new Task("C", testStart, testEnd, 45, true));
+        start = LocalTime.now().withHour(5).withMinute(45);
+        end = LocalTime.from(start).plusMinutes(45);
+        tasks.add(new Task("C", date, date, 45, false, start, end));
         
-        testStart = new Date(121, 4, 10, 7, 0, 0);
-        testEnd = Date.from(testStart.toInstant());
-        testEnd.setMinutes(testEnd.getMinutes() + 120);
-        tasks.add(new Task("D", testStart, testEnd, 120, true));
+        start = LocalTime.now().withHour(7).withMinute(0);
+        end = LocalTime.from(start).plusMinutes(120);
+        tasks.add(new Task("D", date, date, 120, true, start, end));
         
-        testStart = new Date(121, 4, 10, 10, 15, 0);
-        testEnd = Date.from(testStart.toInstant());
-        testEnd.setMinutes(testEnd.getMinutes() + 90);
-        tasks.add(new Task("E", testStart, testEnd, 90, true));
+        start = LocalTime.now().withHour(10).withMinute(15);
+        end = LocalTime.from(start).plusMinutes(90);
+        tasks.add(new Task("E", date, date, 90, true, start, end));
         
-        testStart = new Date(121, 4, 10, 15, 45, 0);
-        testEnd = Date.from(testStart.toInstant());
-        testEnd.setMinutes(testEnd.getMinutes() + 30);
-        tasks.add(new Task("F", testStart, testEnd, 30, true));
+        start = LocalTime.now().withHour(15).withMinute(45);
+        end = LocalTime.from(start).plusMinutes(30);
+        tasks.add(new Task("F", date, date, 30, false, start, end));
         
-        testStart = new Date(121, 4, 10, 20, 30, 0);
-        testEnd = Date.from(testStart.toInstant());
-        testEnd.setMinutes(testEnd.getMinutes() + 90);
-        tasks.add(new Task("G", testStart, testEnd, 90, true));*/
+        start = LocalTime.now().withHour(22).withMinute(45);
+        end = LocalTime.from(start).plusMinutes(90);
+        tasks.add(new Task("G", date, date, 90, false, start, end));
         
         month = new MonthView(stage, date, tasks);
         
@@ -71,12 +61,12 @@ public class PSS extends Application {
         });
         
         month.getLeft().setOnMouseClicked(v -> {
-            date.setMonth(date.getMonth() - 1);
+            date.minusMonths(1);
             switchView("Month");
         });
          
         month.getRight().setOnMouseClicked(v -> {
-            date.setMonth(date.getMonth() + 1);
+            date.plusMonths(1);
             switchView("Month");
         });
         
@@ -100,12 +90,12 @@ public class PSS extends Application {
             });
             
             day.getLeft().setOnMouseClicked(v -> {
-               date.setDate(date.getDate() - 1);
+               date.minusDays(1);
                switchView("Day");
             });
             
             day.getRight().setOnMouseClicked(v -> {
-                date.setDate(date.getDate() + 1);
+                date.plusDays(1);
                 switchView("Day");
             });
             
@@ -125,12 +115,12 @@ public class PSS extends Application {
             });
             
             week.getLeft().setOnMouseClicked(v -> {
-                date.setDate(date.getDate() - 7);
+                date.minusWeeks(1);
                 switchView("Week");
             });
              
             week.getRight().setOnMouseClicked(v -> {
-                date.setDate(date.getDate() + 7);
+                date.plusWeeks(1);
                 switchView("Week");
             });
             
@@ -150,12 +140,12 @@ public class PSS extends Application {
             });
             
             month.getLeft().setOnMouseClicked(v -> {
-                date.setMonth(date.getMonth() - 1);
+                date.minusMonths(1);
                 switchView("Month");
             });
              
             month.getRight().setOnMouseClicked(v -> {
-                date.setMonth(date.getMonth() + 1);
+                date.plusMonths(1);
                 switchView("Month");
             });
             
