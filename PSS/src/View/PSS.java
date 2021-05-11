@@ -20,29 +20,46 @@ public class PSS extends Application {
     @Override
     public void start(Stage stage)  {
         date = new Date();
-        Date testStart = new Date(), testEnd = new Date();
-        testEnd.setHours(testStart.getHours() + 1);
         this.stage = stage;
         
+        Date testStart = new Date(121, 4, 10, 0, 15, 0);
+        Date testEnd = Date.from(testStart.toInstant());
+        testEnd.setMinutes(testEnd.getMinutes() + 90);
         tasks.add(new Task("A", testStart, testEnd, 90, false));
-        testStart.setHours(testEnd.getHours() + 1);
-        testEnd.setHours(testStart.getHours() + 1);
-        tasks.add(new Task("B", testStart, testEnd, 90, true));
-        testStart.setHours(testEnd.getHours() + 1);
-        testEnd.setHours(testStart.getHours() + 1);
-        tasks.add(new Task("C", testStart, testEnd, 90, false));
-        testStart.setHours(testEnd.getHours() + 1);
-        testEnd.setHours(testStart.getHours() + 1);
-        tasks.add(new Task("D", testStart, testEnd, 90, true));
-        testStart.setHours(testEnd.getHours() + 1);
-        testEnd.setHours(testStart.getHours() + 1);
-        tasks.add(new Task("E", testStart, testEnd, 90, false));
-        testStart.setHours(testEnd.getHours() + 1);
-        testEnd.setHours(testStart.getHours() + 1);
-        tasks.add(new Task("F", testStart, testEnd, 90, false));
-        testStart.setHours(testEnd.getHours() + 1);
-        testEnd.setHours(testStart.getHours() + 1);
-        tasks.add(new Task("E", testStart, testEnd, 90, false));
+        
+        /*testStart.setHours(3);
+        testStart.setMinutes(30);
+        testEnd.setHours(3);
+        testEnd.setMinutes(45);*/
+        Date testStart1 = new Date(121, 4, 10, 3, 30, 0);
+        Date testEnd1 = Date.from(testStart1.toInstant());
+        testEnd1.setMinutes(testEnd1.getMinutes() + 15);
+        tasks.add(new Task("B", testStart1, testEnd1, 15, true));
+        
+        /*testStart = new Date(121, 4, 10, 5, 45, 0);
+        testEnd = Date.from(testStart.toInstant());
+        testEnd.setMinutes(testEnd.getMinutes() + 45);
+        tasks.add(new Task("C", testStart, testEnd, 45, true));
+        
+        testStart = new Date(121, 4, 10, 7, 0, 0);
+        testEnd = Date.from(testStart.toInstant());
+        testEnd.setMinutes(testEnd.getMinutes() + 120);
+        tasks.add(new Task("D", testStart, testEnd, 120, true));
+        
+        testStart = new Date(121, 4, 10, 10, 15, 0);
+        testEnd = Date.from(testStart.toInstant());
+        testEnd.setMinutes(testEnd.getMinutes() + 90);
+        tasks.add(new Task("E", testStart, testEnd, 90, true));
+        
+        testStart = new Date(121, 4, 10, 15, 45, 0);
+        testEnd = Date.from(testStart.toInstant());
+        testEnd.setMinutes(testEnd.getMinutes() + 30);
+        tasks.add(new Task("F", testStart, testEnd, 30, true));
+        
+        testStart = new Date(121, 4, 10, 20, 30, 0);
+        testEnd = Date.from(testStart.toInstant());
+        testEnd.setMinutes(testEnd.getMinutes() + 90);
+        tasks.add(new Task("G", testStart, testEnd, 90, true));*/
         
         month = new MonthView(stage, date, tasks);
         
@@ -73,7 +90,7 @@ public class PSS extends Application {
     public void switchView(String view) {
         switch (view) {
         case "Day":
-            day = new DayView(stage, date);
+            day = new DayView(stage, date, tasks);
             
             //change view when drop box selection changes
             day.getSelect().getSelectionModel().selectedItemProperty().addListener( (options, oldValue, newValue) -> {
@@ -98,7 +115,7 @@ public class PSS extends Application {
 
             break;
         case "Week":
-            week = new WeekView(stage, date);
+            week = new WeekView(stage, date, tasks);
 
             //change view when drop box selection changes
             week.getSelect().getSelectionModel().selectedItemProperty().addListener( (options, oldValue, newValue) -> {

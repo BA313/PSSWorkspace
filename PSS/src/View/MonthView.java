@@ -15,10 +15,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import javafx.scene.layout.StackPane;
 import java.util.Date;
-import java.util.Calendar;
 
 public class MonthView extends AbstractMenu {
     private final double HEADER_HEIGHT = 50, CELL_WIDTH = 765 / 7, CELL_HEIGHT;
@@ -31,6 +31,7 @@ public class MonthView extends AbstractMenu {
         CELL_HEIGHT = 600 / numOfWeeks;
     }
     
+    //constructor to load into present month
     MonthView(Stage stage, ArrayList<Task> tasks) {
         super();
         
@@ -40,13 +41,14 @@ public class MonthView extends AbstractMenu {
         stage.setTitle("Month View");
         stage.setScene(scene);
         CELL_HEIGHT = 600 / numOfWeeks;
-        nodes = new VBox[7][numOfWeeks + 1];
-        extras = new BorderPane[7][numOfWeeks + 1];
+        nodes = new VBox[numOfWeeks][7];
+        extras = new BorderPane[numOfWeeks][7];
         
-        buildMenu();
+        buildView();
         drawTasks();
     }
     
+    //constructor to load into specific date
     MonthView(Stage stage, Date date, ArrayList<Task> tasks) {
         super(date);
         
@@ -56,22 +58,21 @@ public class MonthView extends AbstractMenu {
         stage.setTitle("Month View");
         stage.setScene(scene);
         CELL_HEIGHT = 600 / numOfWeeks;
-        nodes = new VBox[7][numOfWeeks + 1];
-        extras = new BorderPane[7][numOfWeeks + 1];
+        nodes = new VBox[numOfWeeks][7];
+        extras = new BorderPane[numOfWeeks][7];
         
-        buildMenu();
+        buildView();
         drawTasks();
     }
     
-    public void buildMenu() {  
-        Calendar prevMonth = (Calendar) date.clone();
-        prevMonth.set(Calendar.MONTH, date.get(Calendar.MONTH) - 1);
+    public void buildView() {  
+        //get the last month to draw the carry over days from the last month on the first week of the calendar
+        LocalDate prevMonth = (date.getMonthValue() == 1) ? date.withYear(date.getYear() - 1).withMonth(12) : date.withMonth(date.getMonthValue() - 1);
         
-        int dayOfMonth = date.get(Calendar.DAY_OF_MONTH);
-        date.set(Calendar.DAY_OF_MONTH, 1);
-        int daysInMonth = date.getActualMaximum(Calendar.DAY_OF_MONTH), firstDay = date.get(Calendar.DAY_OF_WEEK) - 1, dayCounter = 1, outOfRangeCounter = 1;
-        date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        //save current day, get the number of days in the month, the first day of the month, counters for drawing the calendar, and restore current day
+        int daysInMonth = date.lengthOfMonth(), dayCounter = 1, outOfRangeCounter = 1;
         
+        //set drop down selector to show month view
         select.getSelectionModel().select(2);
         
         //use a gridpane for the calendar header for consistency with the calendar
@@ -121,7 +122,7 @@ public class MonthView extends AbstractMenu {
                 StackPane.setMargin(extra, new Insets(5, 5, 5, 5));
                 
                 if(i == 0 && j < firstDay) {
-                    Text dateText = new Text(Integer.toString(prevMonth.getActualMaximum(Calendar.DAY_OF_MONTH) - firstDay + j + 1));
+                    Text dateText = new Text(Integer.toString(prevMonth.lengthOfMonth() - firstDay + j + 1));
                     dateText.setFill(Color.GRAY);
                     dateAndExtra.setRight(dateText);
                     dateAndExtra.setLeft(extraPane);
@@ -157,50 +158,56 @@ public class MonthView extends AbstractMenu {
         finalCalendar.getChildren().addAll(calendarHeader, calendar);
         finalCalendar.setAlignment(Pos.CENTER_LEFT);
                 
-        //build final pane
+        //build final pane and take focus off buttons so they don't load highlighted
         pane.setLeft(finalCalendar);
-        
         pane.requestFocus();
         
         //set alignment and margins
         BorderPane.setMargin(finalCalendar, new Insets(0.0, 0.0, 10.0, 10.0));
     }
     
+    //add boxes for tasks on calendar
     public void drawTasks() {
         for(Task task : tasks) {
-            int row = (int) Math.floor((date.get(Calendar.DAY_OF_MONTH) - 1 + firstDay) / 7);
-            int column = (date.get(Calendar.DAY_OF_MONTH) - 1 + firstDay) - (7 * row);
+            //get grid indexes, height of box, and offset of the start of the box
+            int row = (int) Math.floor((date.getDayOfMonth() - 1 + firstDay) / 7);
+            int column = (date.getDayOfMonth() - 1 + firstDay) - (7 * row);
             
+            //only show the first 5 tasks of a given day, then show a counter in top left for how many more tasks there are that day
+            //checks > 6 to account for the child node used to show the date
             if(nodes[row][column].getChildren().size() > 6) {
+                //get excess counter pane for given date
                 StackPane stack = (StackPane) extras[row][column].getLeft();
                 stack.setVisible(true);
                 Text text = (Text) stack.getChildren().get(0);
                 int num = 0;
                 
+                //if not the first task, get current count so that it can be incremented
                 if(text.getText().length() > 1) {
                     num = Integer.parseInt(text.getText().substring(1));
                 }
                 
+                //increment and display counter
                 num++;
                 text.setText("+" + num);
             } else {
+                //new rectangle to show one of the first 5 tasks
                 Rectangle rect = new Rectangle(CELL_WIDTH, 10);
                 rect.setFill(Color.BLUE);
                 rect.setOpacity(0.2);
                 Label label;
                 
+                //limit the length of the name
                 if(task.getName().length() > 10) {
                     label = new Label(task.getName().substring(0, 6) + "...", rect);
                 } else {
                     label = new Label(task.getName(), rect);
                 }
                 
+                //add on click listener to the label to show the task details/edit the task, and add the to calendar
                 label.setContentDisplay(ContentDisplay.CENTER);
+                label.setOnMouseClicked(v -> addTask(task));
                 nodes[row][column].getChildren().add(label);
-                
-                label.setOnMouseClicked(v -> {
-                    addTask(task);
-                });
             }
         }
     }
