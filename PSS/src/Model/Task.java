@@ -47,4 +47,8 @@ public class Task {
     public LocalTime getEndTime() {
         return endTime;
     }
+    
+    public String toString() {
+    	return "Task Name: " + name;
+    }
 }
