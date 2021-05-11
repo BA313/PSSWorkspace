@@ -1,7 +1,12 @@
-package View;
+
 
 import javafx.application.Application;
 import java.util.ArrayList;
+
+import Model.Task;
+import View.DayView;
+import View.MonthView;
+import View.WeekView;
 import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.time.LocalTime;

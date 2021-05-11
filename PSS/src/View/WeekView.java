@@ -17,6 +17,9 @@ import javafx.scene.shape.Line;
 import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
 import java.util.ArrayList;
+
+import Model.Task;
+
 import java.time.LocalDate;
 
 public class WeekView extends AbstractMenu {
@@ -42,7 +45,7 @@ public class WeekView extends AbstractMenu {
     }
     
     //constructor to load into specific date
-    WeekView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
+    public WeekView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
         super(date);
         
         this.stage = stage;

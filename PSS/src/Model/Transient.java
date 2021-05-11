@@ -1,6 +1,15 @@
 package Model;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public class Transient extends Task {
+	
+	public Transient(String name, LocalDate startDate, LocalDate endDate, int duration, boolean repeat,
+			LocalTime startTime, LocalTime endTime) {
+		super(name, startDate, endDate, duration, repeat, startTime, endTime);
+	}
+
 	private String task, category;
 	
 	private static String formatTime(int time) {

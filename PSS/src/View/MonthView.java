@@ -17,6 +17,8 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
 import java.time.LocalDate;
 import java.util.ArrayList;
+
+import Model.Task;
 import javafx.scene.layout.StackPane;
 
 public class MonthView extends AbstractMenu {
@@ -48,7 +50,7 @@ public class MonthView extends AbstractMenu {
     }
     
     //constructor to load into specific date
-    MonthView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
+    public MonthView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
         super(date);
         
         this.stage = stage;

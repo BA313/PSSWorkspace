@@ -1,6 +1,6 @@
 package Model;
 
-public class Anti extends Task {
+public class Anti {
 	private static boolean cancelTask() {
 		return false;
 	}

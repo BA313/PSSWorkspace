@@ -17,6 +17,9 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import Model.Task;
+
 import java.lang.Math;
 import java.time.format.TextStyle;
 import javafx.scene.paint.Color;
@@ -45,7 +48,7 @@ public class DayView extends AbstractMenu {
     }
     
     //constructor to load into specific date
-    DayView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
+    public DayView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
         super(date);
         
         this.stage = stage;

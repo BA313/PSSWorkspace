@@ -4,6 +4,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import java.util.Locale;
+
+import Model.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -204,7 +206,7 @@ public abstract class AbstractMenu {
         startDate = new DatePicker(date);
         endDate = new DatePicker(date);
         
-        startTime = new Spinner<>(new SpinnerValueFactory<>() {
+        startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
             @Override
             public void decrement(int num) {
                 if(getValue() == null) {
@@ -226,7 +228,7 @@ public abstract class AbstractMenu {
             }
         });
         
-        endTime = new Spinner<>(new SpinnerValueFactory<>() {
+        endTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
             @Override
             public void decrement(int num) {
                 if(getValue() == null) {
@@ -323,7 +325,7 @@ public abstract class AbstractMenu {
         startDate = new DatePicker(task.getStartDate());
         endDate = new DatePicker(task.getEndDate());
         
-        startTime = new Spinner<>(new SpinnerValueFactory<>() {
+        startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
             @Override
             public void decrement(int num) {
                 if(getValue() == null) {
@@ -345,7 +347,7 @@ public abstract class AbstractMenu {
             }
         });
         
-        endTime = new Spinner<>(new SpinnerValueFactory<>() {
+        endTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
             @Override
             public void decrement(int num) {
                 if(getValue() == null) {
