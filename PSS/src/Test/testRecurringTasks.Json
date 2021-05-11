@@ -1,0 +1,20 @@
+[
+    {
+      "StartDate" : 20200414,
+      "StartTime" : 19,
+      "endTime" : 20,
+      "id" : 1234567,
+      "task" : "CS3560-Tu",
+      "category" : "Class",
+      "endDate" : 20200505
+    },
+    {
+        "StartDate" : 20200415,
+        "StartTime" : 111,
+        "endTime" : 333,
+        "id" : 7654321,
+        "task" : "CS3560-Tu",
+        "category" : "Class",
+        "endDate" : 20200605
+    }
+]
