@@ -10,9 +10,5 @@ public class Recurring extends Task {
 			LocalTime startTime, LocalTime endTime) {
 		super(name, startDate, endDate, duration, repeat, startTime, endTime);
 	}
-	private int repeatBasis;
-	private String task, category;
-	private Date endDate;
-
 
 }
