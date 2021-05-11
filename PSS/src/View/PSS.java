@@ -1,4 +1,4 @@
-package pss;
+package View;
 
 import javafx.application.Application;
 import java.util.ArrayList;

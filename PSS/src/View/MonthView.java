@@ -1,4 +1,4 @@
-package pss;
+package View;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
