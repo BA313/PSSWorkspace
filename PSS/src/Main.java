@@ -1,8 +1,10 @@
+import Model.Model;
 
 public class Main {
 
+	//temp runner to test json reader
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		Model m = new Model();
 
 	}
 

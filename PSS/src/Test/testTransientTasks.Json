@@ -1,10 +1,10 @@
 [
     {
+      "task" : "CS3560-Tu",
       "StartDate" : 20200414,
       "StartTime" : 19,
       "endTime" : 20,
       "id" : 1234567,
-      "task" : "CS3560-Tu",
       "category" : "Class"
     },
     {

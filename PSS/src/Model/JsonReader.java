@@ -16,7 +16,7 @@ public class JsonReader {
      * @param filePath path of the json file
      * @return an ArrayList of Task, or an empty ArrayList if exception occurs
      */
-    public ArrayList<Task> readRecurTaskList(String filePath) {
+    public static ArrayList<Task> readRecurTaskList(String filePath) {
         Gson gson = new Gson();
         try {
             Reader reader = Files.newBufferedReader(Paths.get(filePath));
@@ -34,7 +34,7 @@ public class JsonReader {
      * @param filePath path of the json file
      * @return an ArrayList of Task, or an empty ArrayList if exception occurs
      */
-    public ArrayList<Task> readTransientTaskList(String filePath) {
+    public static ArrayList<Task> readTransientTaskList(String filePath) {
         Gson gson = new Gson();
         try {
             Reader reader = Files.newBufferedReader(Paths.get(filePath));
@@ -53,7 +53,7 @@ public class JsonReader {
      * @param transientTaskFilePath path of the json file
      * @return an ArrayList of Task, or an empty ArrayList if exception occurs
      */
-    public ArrayList<Task> readTaskList(String recurTaskFilePath, String transientTaskFilePath) {
+    public static ArrayList<Task> readTaskList(String recurTaskFilePath, String transientTaskFilePath) {
         Gson gson = new Gson();
         try {
             Reader reader = Files.newBufferedReader(Paths.get(recurTaskFilePath));
