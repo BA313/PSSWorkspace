@@ -10,7 +10,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
-import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.layout.GridPane;
@@ -18,50 +17,52 @@ import javafx.scene.shape.Line;
 import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 public class WeekView extends AbstractMenu {
     private final double CELL_HEIGHT = 50, CELL_WIDTH = 100;
     private GridPane calendar;
-    private Pane[][] nodes = new Pane[7][24];
     
     WeekView() {
         
     }
     
-    WeekView(Stage stage) {
+    //constructor to load into present week
+    WeekView(Stage stage, ArrayList<Task> tasks) {
         super();
         
         this.stage = stage;
+        this.tasks = tasks;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
         
-        buildMenu();
+        buildView();
         drawTasks();
     }
     
-    WeekView(Stage stage, Date date) {
+    //constructor to load into specific date
+    WeekView(Stage stage, Date date, ArrayList<Task> tasks) {
         super(date);
         
         this.stage = stage;
+        this.tasks = tasks;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
         
-        buildMenu();
+        buildView();
         drawTasks();
     }
     
-    public void buildMenu() {    
+    public void buildView() {    
+        //set drop down selector to show week view
         select.getSelectionModel().select(1);
         
-        /*
-         * add highlight to selected day
-         * */
-        int row = (int) Math.floor((date.get(Calendar.DAY_OF_MONTH) - 1 + firstDay) / 7);
+        //get index of the first day of current week
+        int row = (int) Math.floor((date.getDayOfMonth() - 1 + firstDay) / 7);
         
+        //highlight every day of the week on the mini month calendar
         for(int i = 0; i < 7; i++) {
             Rectangle rect = new Rectangle(MINI_SIZE, MINI_SIZE);
             rect.setFill(Color.BLUE);
@@ -143,7 +144,6 @@ public class WeekView extends AbstractMenu {
                         
                 //add design pane, and container hbox to the grid
                 calendar.add(dayBox, j + 1, i);
-                nodes[i][j] = dayBox;
             }
                     
             //once noon or midnight is reached, reset the clock to create a 12 hour clock
@@ -173,18 +173,37 @@ public class WeekView extends AbstractMenu {
         finalCalendar.getChildren().addAll(calendarHeader, calendarScroll);
         finalCalendar.setAlignment(Pos.CENTER_LEFT);
                 
-        //build final pane
+        //build final pane and take focus off buttons so they don't load highlighted
         pane.setLeft(finalCalendar);
-        
         pane.requestFocus();
         
         //set alignment and margins
         BorderPane.setMargin(finalCalendar, new Insets(0.0, 5.0, 10.0, 10.0));
     }
     
+    //add boxes for tasks on calendar
     public void drawTasks() {
-        for(Task tasks : tasks) {
+        calendar.setGridLinesVisible(true);
+        for(Task task : tasks) {
+            //get grid indexes, height of box, and offset of the start of the box
+            int row = task.getStartDate().getHours();
+            int column = task.getStartDate().getDay() + 1;
+            double height = (CELL_HEIGHT / 4) * (task.getDuration() / 15);
+            double offset = (CELL_HEIGHT / 4) * (task.getStartDate().getMinutes() / 15);
             
+            //rectangle to add to calendar
+            Rectangle rect = new Rectangle(CELL_WIDTH, height);
+            rect.setFill(Color.BLUE);
+            rect.setOpacity(0.5);
+            
+            //label with task name, and on click listener to show task details/edit task
+            Label label = new Label(task.getName(), rect);
+            label.setContentDisplay(ContentDisplay.CENTER);
+            label.setOnMouseClicked(v -> addTask(task));
+            label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");
+            
+            //add box to calendar, the math expression determines the column span and thankfully applies the right offset to the rectangle
+            calendar.add(label, column, row, 1, (int)Math.floor((height + offset) / CELL_HEIGHT) + 1);
         }
     }
 }

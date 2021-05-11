@@ -9,7 +9,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
-import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.layout.GridPane;
@@ -17,10 +16,11 @@ import javafx.scene.shape.Line;
 import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.lang.Math;
+import java.time.format.TextStyle;
+
 import javafx.scene.paint.Color;
 
 public class DayView extends AbstractMenu {
@@ -31,38 +31,41 @@ public class DayView extends AbstractMenu {
         
     }
     
-    DayView(Stage stage) {
+    //constructor to load into present day
+    DayView(Stage stage, ArrayList<Task> tasks) {
         super();
         
         this.stage = stage;
+        this.tasks = tasks;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
         
-        buildMenu();
+        buildView();
         drawTasks();
     }
     
-    DayView(Stage stage, Date date) {
+    //constructor to load into specific date
+    DayView(Stage stage, Date date, ArrayList<Task> tasks) {
         super(date);
         
         this.stage = stage;
+        this.tasks = tasks;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
         
-        buildMenu();
+        buildView();
         drawTasks();
     }
     
-    public void buildMenu() {  
+    public void buildView() {  
+        //set drop down selector to show day view
         select.getSelectionModel().select(0);
         
-        /*
-         * add highlight to selected day
-         * */
-        int row = (int) Math.floor((date.get(Calendar.DAY_OF_MONTH) - 1 + firstDay) / 7);
-        int column = (date.get(Calendar.DAY_OF_MONTH) - 1 + firstDay) - (7 * row);
+        //get grid index of the current day, then highlight that day on the mini month calendar
+        int row = (int) Math.floor((date.getDayOfMonth() - 1 + firstDay) / 7);
+        int column = (date.getDayOfMonth() - 1 + firstDay) - (7 * row);
         Rectangle rect = new Rectangle(MINI_SIZE, MINI_SIZE);
         rect.setFill(Color.BLUE);
         rect.setOpacity(0.2);
@@ -72,7 +75,7 @@ public class DayView extends AbstractMenu {
         GridPane calendarHeader = new GridPane();
                     
         //label for each day of the week
-        Label label = new Label(date.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, new Locale("en")));
+        Label label = new Label(date.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("en")));
                 
         //blank rectangle at start of header, so that the header is properly aligned with the calendar table
         Pane formattingBox = new Pane();
@@ -166,16 +169,35 @@ public class DayView extends AbstractMenu {
         finalCalendar.getChildren().addAll(calendarHeader, calendarScroll);
         finalCalendar.setAlignment(Pos.CENTER_LEFT);
                 
-        //build final pane
+        //build final pane and take focus off buttons so they don't load highlighted
         pane.setLeft(finalCalendar);
-        
         pane.requestFocus();
         
         //set alignment and margins
         BorderPane.setMargin(finalCalendar, new Insets(0.0, 5.0, 10.0, 10.0));
     }
     
+    //add boxes for tasks on calendar
     public void drawTasks() {
-        
+        for(Task task : tasks) {
+            //get grid index, height of box, and offset of the start of the box
+            int row = task.getStartDate().getHours();
+            double height = (CELL_HEIGHT / 4) * (task.getDuration() / 15);
+            double offset = (CELL_HEIGHT / 4) * (task.getStartDate().getMinutes() / 15);
+            
+            //rectangle to add to calendar
+            Rectangle rect = new Rectangle(7 * CELL_WIDTH, height);
+            rect.setFill(Color.BLUE);
+            rect.setOpacity(0.2);
+            
+            //label with task name, and on click listener to show task details/edit task
+            Label label = new Label(task.getName(), rect);
+            label.setContentDisplay(ContentDisplay.CENTER);
+            label.setOnMouseClicked(v -> addTask(task));
+            label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");
+            
+            //add box to calendar, the math expression determines the column span and thankfully applies the right offset to the rectangle
+            calendar.add(label, 1, row, 1, (int)Math.floor((height + offset) / 50) + 1);
+        }
     }
 }
