@@ -309,6 +309,15 @@ public abstract class AbstractMenu {
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
         rightPane.setCenter(taskPane);
         
+        //add new task to task array when called
+        create.setOnAction(v -> {
+        	//TODO add logic for adding tasks to array 
+        	tasks.add(createTask());
+        	buildView();
+        	drawTasks();
+        	rightPane.setCenter(null);
+        });
+        
         //close pane when cancel button pressed
         close.setOnAction(event -> rightPane.setCenter(null));
     }
@@ -467,6 +476,13 @@ public abstract class AbstractMenu {
 	
 	//used to draw the tasks on the calendars
 	public abstract void drawTasks();
+	
+	private Task createTask() {
+		Task newTask = new Task(getName(), getStartDate(), 
+    			getEndDate(),getDuration(),
+    			getRepeat(), getStartTime(), getEndTime());
+    	return newTask;
+	}
 
 	/*
 	 * getters
