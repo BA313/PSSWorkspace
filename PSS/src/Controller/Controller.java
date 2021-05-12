@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import Model.JsonReader;
 import Model.Task;
 
+//TODO add month, week, day sorting
+
 public class Controller {
 	
 		//Working path to Test Data set

@@ -260,6 +260,8 @@ public abstract class AbstractMenu {
         startTime.getValueFactory().setValue(round15Mins(LocalTime.now()));
         endTime.getValueFactory().setValue(round15Mins(LocalTime.now()));
         
+        duration.setText("1");
+        
         //only allow numbers to be entered into the duration field
         duration.textProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -311,11 +313,20 @@ public abstract class AbstractMenu {
         
         //add new task to task array when called
         create.setOnAction(v -> {
-        	//TODO add logic for adding tasks to array 
-        	tasks.add(createTask());
-        	buildView();
-        	drawTasks();
-        	rightPane.setCenter(null);
+        	boolean done = true;
+        	try {
+        		tasks.add(createTask());
+        	}catch(Exception e){
+        		//check for errors
+        		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration is not empty");
+        		done = false;
+        	}
+        	//close and refresh page if done
+        	if(done) {
+	        	buildView();
+	        	drawTasks();
+	        	rightPane.setCenter(null);
+        	}
         });
         
         //close pane when cancel button pressed
@@ -386,6 +397,7 @@ public abstract class AbstractMenu {
         endTime.getValueFactory().setValue(task.getEndTime());
         repeat.setSelected(task.getRepeat());
         
+        
         //only allow numbers to be entered into the duration field
         duration.textProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -449,7 +461,7 @@ public abstract class AbstractMenu {
     public static void popupError(String errorMsg) {
         //error message to show
         Text error = new Text(errorMsg);
-        error.setFont(Font.font("Courier", FontWeight.BOLD, 20));
+        error.setFont(Font.font("Courier", 20));
         error.setStyle("-fx-fill: white; -fx-stroke: royalblue; -fx-stroke-width: 3px");
         
         //button to close popup
