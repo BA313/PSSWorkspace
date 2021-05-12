@@ -12,6 +12,8 @@ public class Model {
 	
 	public Model(){
 		taskList = JsonReader.readTaskList(filepath+"testTasks.json");
-		System.out.print(taskList.get(0).toString());		
+		System.out.println(taskList.get(0).toString());
+		taskList = JsonReader.readStandardTaskList(filepath+"Set1.json");
+		System.out.println(taskList.get(0).toString());
 	}
 }
