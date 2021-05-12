@@ -1,10 +1,10 @@
-import Model.Model;
+import Controller.Controller;
 
 public class Main {
 
 	//temp runner to test json reader
 	public static void main(String[] args) {
-		Model m = new Model();
+		Controller m = new Controller();
 
 	}
 
