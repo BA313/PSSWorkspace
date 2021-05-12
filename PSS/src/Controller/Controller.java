@@ -14,8 +14,10 @@ public class Controller {
 		private ArrayList<Task> taskList;
 		
 		public Controller(){
-			taskList = JsonReader.readTaskList(testFilepath+"testTasks.json");
+			//taskList = JsonReader.readTaskList(testFilepath+"testTasks.json");
 			//System.out.print(taskList.get(0).toString());		
+			taskList = JsonReader.readStandardTaskList(filepath+"Set1.json");
+			//System.out.println(taskList.get(0).toString());
 		}
 		
 		public ArrayList<Task> getTasks() {
