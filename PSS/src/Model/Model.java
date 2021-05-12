@@ -12,7 +12,7 @@ public class Model {
 	private ArrayList<Task> taskList;
 	
 	public Model(){
-		taskList = JsonReader.readTransientTaskList(filepath2+"testTransientTasks.json");
+		taskList = JsonReader.readTaskList(filepath2+"testTasks.json");
 		System.out.print(taskList.get(0).toString());		
 	}
 }
