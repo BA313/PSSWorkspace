@@ -55,5 +55,32 @@ public class Controller {
 			}
 			return monthTasks;
 		}
+		
+		//gets all tasks for a certain day in a month 
+		public ArrayList<Task> getDayMonthTasks(int d, int m, int y){
+			ArrayList<Task> dayTasks = new ArrayList();
+			for(Task task: taskList) {
+				LocalDate temp = task.getStartDate();
+				if(temp.getMonthValue() == m && temp.getDayOfMonth() == d && temp.getYear() == y) {
+					dayTasks.add(task);
+				}
+			}
+			return dayTasks;
+		}
+		
+		//gets all tasks for a certain week in a month
+		public ArrayList<Task> getWeekTasks(int d, int w, int m, int y){
+			ArrayList<Task> weekTasks = new ArrayList();
+			int weekStart = d - w;
+			int weekEnd = weekStart + 7;
+			for(Task task: taskList) {
+				LocalDate temp  = task.getStartDate();
+				if(temp.getMonthValue() == m && temp.getYear() == y)
+					if ((weekStart <= temp.getDayOfMonth()) && (temp.getDayOfMonth() < weekEnd)) {
+						weekTasks.add(task);
+				}
+			}
+			return weekTasks;
+		}
 
 }

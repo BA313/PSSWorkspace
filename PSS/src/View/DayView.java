@@ -182,7 +182,7 @@ public class DayView extends AbstractMenu {
     //TODO CHANGE
     //add boxes for tasks on calendar
     public void drawTasks() {
-        for(Task task : control.getTasks()) {
+        for(Task task : control.getDayMonthTasks(date.getDayOfMonth(), date.getMonthValue(), date.getYear())) {
             //get grid index, height of box, and offset of the start of the box
             int row = task.getStartTime().getHour();
             double height = (CELL_HEIGHT / 4) * (task.getDuration() / 15) + 1;
