@@ -1,8 +1,5 @@
-
-
 import javafx.application.Application;
 import java.util.ArrayList;
-
 import Controller.Controller;
 import Model.Task;
 import View.DayView;
@@ -71,12 +68,12 @@ public class PSS extends Application {
         });
         
         month.getLeft().setOnMouseClicked(v -> {
-            date.minusMonths(1);
+            date = date.minusMonths(1);
             switchView("Month");
         });
          
         month.getRight().setOnMouseClicked(v -> {
-            date.plusMonths(1);
+            date = date.plusMonths(1);
             switchView("Month");
         });
         
@@ -100,12 +97,12 @@ public class PSS extends Application {
             });
             
             day.getLeft().setOnMouseClicked(v -> {
-               date.minusDays(1);
+                date = date.minusDays(1);
                switchView("Day");
             });
             
             day.getRight().setOnMouseClicked(v -> {
-                date.plusDays(1);
+                date =  date.plusDays(1);
                 switchView("Day");
             });
             
@@ -125,12 +122,12 @@ public class PSS extends Application {
             });
             
             week.getLeft().setOnMouseClicked(v -> {
-                date.minusWeeks(1);
+                date = date.minusWeeks(1);
                 switchView("Week");
             });
              
             week.getRight().setOnMouseClicked(v -> {
-                date.plusWeeks(1);
+                date = date.plusWeeks(1);
                 switchView("Week");
             });
             
@@ -150,12 +147,12 @@ public class PSS extends Application {
             });
             
             month.getLeft().setOnMouseClicked(v -> {
-                date.minusMonths(1);
+                date = date.minusMonths(1);
                 switchView("Month");
             });
              
             month.getRight().setOnMouseClicked(v -> {
-                date.plusMonths(1);
+                date = date.plusMonths(1);
                 switchView("Month");
             });
             
