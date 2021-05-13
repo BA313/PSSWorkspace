@@ -14,7 +14,7 @@ public class StandardTask {
     private int Frequency;
 
     //TODO CHANGE -> duration is not in minutes but hrs i.e. 1.25 = 1 hr and 15 mins
-    //TODO two tasks from set 1 are loading in with default time -> fix
+    //TODO two tasks from set 1 are loading in with default time -> fix -> read Date the same as startDate
     public StandardTask(String name, String type, int startDate, int startTime, float duration, int endDate, int frequency) {
         Name = name;
         Type = type;

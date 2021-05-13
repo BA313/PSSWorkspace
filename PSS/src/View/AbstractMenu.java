@@ -16,7 +16,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
-import java.util.ArrayList;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -426,6 +425,8 @@ public abstract class AbstractMenu {
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
         rightPane.setCenter(taskPane);
+        
+        //TODO Create Functionality for Cancel Task and Edit Task
         
         //close pane when cancel button pressed
         close.setOnAction(event -> rightPane.setCenter(null));
