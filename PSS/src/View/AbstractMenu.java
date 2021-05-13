@@ -4,7 +4,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import java.util.Locale;
-
 import Model.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -50,7 +49,7 @@ public abstract class AbstractMenu {
 	protected TextField name, duration;
 	protected CheckBox repeat;
 	protected DatePicker startDate, endDate;
-	protected Spinner<LocalTime> startTime, endTime;
+	protected Spinner<LocalTime> startTime;
 	
 	//constructor to load into present date
 	public AbstractMenu() {
@@ -201,37 +200,12 @@ public abstract class AbstractMenu {
             }
         });
         
-        endTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
-            @Override
-            public void decrement(int num) {
-                if(getValue() == null) {
-                    setValue(LocalTime.now());
-                } else {
-                    LocalTime time = getValue();
-                    setValue(time.minusMinutes(15));
-                }
-            }
-
-            @Override
-            public void increment(int num) {
-                if(getValue() == null) {
-                    setValue(LocalTime.now());
-                } else {
-                    LocalTime time = getValue();
-                    setValue(time.plusMinutes(15));
-                }
-            }
-        });
-        
         //hide end date selector and set repeat to false
         repeat.setSelected(false);
         startTime.setEditable(true);
-        endTime.setEditable(true);
         
         startTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
-        endTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
         startTime.getValueFactory().setValue(round15Mins(LocalTime.now()));
-        endTime.getValueFactory().setValue(round15Mins(LocalTime.now()));
         
         duration.setText("1");
         
@@ -248,13 +222,12 @@ public abstract class AbstractMenu {
         //add labels for name and duration text fields
         Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
                 startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
-                startTimeLabel = new Label("Start Time: ", startTime), endTimeLabel = new Label("End Time: ", endTime);
+                startTimeLabel = new Label("Start Time: ", startTime);
         nameLabel.setContentDisplay(ContentDisplay.RIGHT);
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
         startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         startTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
-        endTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
         
         //group buttons together
         HBox buttons = new HBox(10);
@@ -262,23 +235,20 @@ public abstract class AbstractMenu {
         buttons.getChildren().addAll(close, create);
         
         endDateLabel.setVisible(false);
-        endTimeLabel.setVisible(false);
         
         //listener to show end date selector if set to repeat
         repeat.selectedProperty().addListener(v -> {
            if(repeat.isSelected()) {
                endDateLabel.setVisible(true);
-               endTimeLabel.setVisible(true);
            } else {
                endDateLabel.setVisible(false);
-               endTimeLabel.setVisible(false);
            }
         });
         
         //build final pane
         VBox taskPane = new VBox(10);
         taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endTimeLabel, endDateLabel, buttons);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, buttons);
         taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
@@ -340,34 +310,9 @@ public abstract class AbstractMenu {
             }
         });
         
-        endTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
-            @Override
-            public void decrement(int num) {
-                if(getValue() == null) {
-                    setValue(LocalTime.now());
-                } else {
-                    LocalTime time = getValue();
-                    setValue(time.minusMinutes(15));
-                }
-            }
-
-            @Override
-            public void increment(int num) {
-                if(getValue() == null) {
-                    setValue(LocalTime.now());
-                } else {
-                    LocalTime time = getValue();
-                    setValue(time.plusMinutes(15));
-                }
-            }
-        });
-        
         startTime.setEditable(true);
-        endTime.setEditable(true);
         startTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
-        endTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
         startTime.getValueFactory().setValue(task.getStartTime());
-        endTime.getValueFactory().setValue(task.getEndTime());
         repeat.setSelected(task.getRepeat());
         
         
@@ -384,13 +329,11 @@ public abstract class AbstractMenu {
         //add labels for name and duration text fields
         Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
                 startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
-                startTimeLabel = new Label("Start Time: ", startTime), endTimeLabel = new Label("End Time: ", endTime);
+                startTimeLabel = new Label("Start Time: ", startTime);
         nameLabel.setContentDisplay(ContentDisplay.RIGHT);
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
         startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
-        startTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
-        endTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
         
         //group buttons together
         HBox buttons = new HBox(10);
@@ -400,27 +343,23 @@ public abstract class AbstractMenu {
         //show/hide end date selector based on whether the task is set to repeat
         if(task.getRepeat()) {
             endDateLabel.setVisible(true);
-            endTimeLabel.setVisible(true);
         } else {
             endDateLabel.setVisible(false);
-            endTimeLabel.setVisible(false);
         }
         
         //listener to show end date selector if set to repeat
         repeat.selectedProperty().addListener(v -> {
            if(repeat.isSelected()) {
                endDateLabel.setVisible(true);
-               endTimeLabel.setVisible(true);
            } else {
                endDateLabel.setVisible(false);
-               endTimeLabel.setVisible(false);
            }
         });
         
         //build final pane
         VBox taskPane = new VBox(10);
         taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, endTimeLabel, buttons);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, buttons);
         taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
@@ -465,7 +404,7 @@ public abstract class AbstractMenu {
 	private Task createTask() {
 		Task newTask = new Task(getName(), getStartDate(), 
     			getEndDate(),getDuration(),
-    			getRepeat(), getStartTime(), getEndTime());
+    			getRepeat(), getStartTime());
     	return newTask;
 	}
 
@@ -529,10 +468,6 @@ public abstract class AbstractMenu {
 	
 	public LocalTime getStartTime() {
 	    return startTime.getValue();
-	}
-	
-	public LocalTime getEndTime() {
-	    return endTime.getValue();
 	}
     
     public ComboBox<String> getSelect() {
