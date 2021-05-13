@@ -53,44 +53,17 @@ public abstract class AbstractMenu {
 	protected Spinner<LocalTime> startTime, endTime;
 	
 	//constructor to load into present date
-	AbstractMenu() {
-        pane = new BorderPane();
-        select = new ComboBox<>();
-        select.getItems().addAll("Day", "Week", "Month");
-        date = LocalDate.now();
-        
-        //save current day, get first and last weeks of month to get number of weeks in month, restore current date
-        LocalDate start = date.withDayOfMonth(1), end = date.withDayOfMonth(date.lengthOfMonth());
-        int lastWeek = end.get(WeekFields.ISO.weekOfYear()), firstWeek = start.get(WeekFields.ISO.weekOfYear());
-        
-        //need to check if december rolls into next year, or the math breaks
-        if(date.getMonthValue() == 12 && lastWeek == 1) {
-            lastWeek += 52;
-        }
-        
-        //get the number of weeks in the month
-        numOfWeeks = lastWeek - firstWeek + 1;
-        
-        //the controls at the top of the ui to switch views/months and create new task
-        left = new Button("<");
-        right = new Button(">");
-        addTask = new Button("Add Task");
-        
-        //show current month and year in title
-        Text titleText = new Text(date.getMonth().getDisplayName(TextStyle.FULL, new Locale("en")) + " " + date.getYear());
-        titleText.setStyle("-fx-font: 20px \"Courier\";");
-        
-        //set the title to the top of the screen and build the mini month calendar
-        HBox title = new HBox(10);
-        title.getChildren().addAll(left, right, titleText, addTask, select);
-        pane.setTop(title);
-        BorderPane.setMargin(title, new Insets(10.0, 10.0, 10.0, 10.0));
-        buildMiniMonth();
+	public AbstractMenu() {
+		loader(LocalDate.now());
     }
 	
 	//constructor to load into specific date
-	AbstractMenu(LocalDate date) {
-	    pane = new BorderPane();
+	public AbstractMenu(LocalDate date) {
+		loader(date);
+    }
+	
+	private void loader(LocalDate date) {
+		pane = new BorderPane();
 	    rightPane = new BorderPane();
         select = new ComboBox<>();
         select.getItems().addAll("Day", "Week", "Month");
@@ -123,7 +96,7 @@ public abstract class AbstractMenu {
         pane.setTop(title);
         BorderPane.setMargin(title, new Insets(10.0, 10.0, 10.0, 10.0));
         buildMiniMonth();
-    }
+	}
 	
 	//show a small month view in the corner to keep track of current date
 	public void buildMiniMonth() {
@@ -496,9 +469,7 @@ public abstract class AbstractMenu {
     	return newTask;
 	}
 
-	/*
-	 * getters
-	 * */
+	//getters
 	
 	public Stage getStage() {
 		return stage;

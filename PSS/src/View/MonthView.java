@@ -33,7 +33,7 @@ public class MonthView extends AbstractMenu {
     }
     
     //constructor to load into present month
-    MonthView(Stage stage, ArrayList<Task> tasks) {
+    public MonthView(Stage stage, ArrayList<Task> tasks) {
         super();
         
         this.stage = stage;

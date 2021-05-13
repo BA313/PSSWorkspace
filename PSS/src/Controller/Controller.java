@@ -20,6 +20,7 @@ public class Controller {
 			//System.out.print(taskList.get(0).toString());		
 			taskList = JsonReader.readStandardTaskList(filepath+"Set1.json");
 			//System.out.println(taskList.get(0).toString());
+			//taskList = new ArrayList<Task>();
 		}
 		
 		public ArrayList<Task> getTasks() {
