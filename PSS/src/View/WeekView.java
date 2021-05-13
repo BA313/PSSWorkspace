@@ -185,7 +185,6 @@ public class WeekView extends AbstractMenu {
         BorderPane.setMargin(finalCalendar, new Insets(0.0, 5.0, 10.0, 10.0));
     }
     
-    //TODO CHANGE
     //add boxes for tasks on calendar
     public void drawTasks() {
     	int day = date.getDayOfMonth();
