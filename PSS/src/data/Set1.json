@@ -11,7 +11,7 @@
   {
     "Name" : "CS3560-Th",
     "Type" : "Class",
-    "StartDate" : 20200416,
+    "StartDate" : 20210416,
     "StartTime" : 19,
     "Duration" : 1.25,
     "EndDate" : 20210507,
@@ -20,14 +20,14 @@
   {
     "Name" : "Skip For Visit",
     "Type" : "Cancellation",
-    "Date" : 20210428,
+    "StartDate" : 20210428,
     "StartTime" : 19,
     "Duration" : 1.25
   },
   {
     "Name" : "Intern Interview",
     "Type" : "Appointment",
-    "Date" : 20210428,
+    "StartDate" : 20210428,
     "StartTime" : 17,
     "Duration" : 2.5
   }

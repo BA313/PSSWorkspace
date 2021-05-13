@@ -4,11 +4,17 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Task {
+	
+	private static final String ANTI_TASK = "Cancellation";
+	private static final String RECURRING_TASK = "Repeat";
+	private static final String TRANSIENT_TASK = "Transient";	
+	
     private String name;
     private LocalDate startDate, endDate;
     private LocalTime startTime, endTime;
     private int duration, id;
     private boolean repeat;
+    private boolean suppressed;
     
     public Task(String name, LocalDate startDate, LocalDate endDate, int duration, boolean repeat, LocalTime startTime, LocalTime endTime) {
         this.name = name;
