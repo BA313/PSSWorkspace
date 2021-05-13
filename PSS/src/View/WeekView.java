@@ -18,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.BorderPane;
 import java.util.ArrayList;
 
+import Controller.Controller;
 import Model.Task;
 
 import java.time.LocalDate;
@@ -31,11 +32,11 @@ public class WeekView extends AbstractMenu {
     }
     
     //constructor to load into present week
-    WeekView(Stage stage, ArrayList<Task> tasks) {
+    WeekView(Stage stage, Controller control) {
         super();
         
         this.stage = stage;
-        this.tasks = tasks;
+        this.control = control;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
@@ -45,11 +46,11 @@ public class WeekView extends AbstractMenu {
     }
     
     //constructor to load into specific date
-    public WeekView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
+    public WeekView(Stage stage, LocalDate date, Controller control) {
         super(date);
         
         this.stage = stage;
-        this.tasks = tasks;
+        this.control = control;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
@@ -184,9 +185,10 @@ public class WeekView extends AbstractMenu {
         BorderPane.setMargin(finalCalendar, new Insets(0.0, 5.0, 10.0, 10.0));
     }
     
+    //TODO CHANGE
     //add boxes for tasks on calendar
     public void drawTasks() {
-        for(Task task : tasks) {
+        for(Task task : control.getTasks()) {
             //get grid indexes, height of box, and offset of the start of the box
             int row = task.getStartTime().getHour();
             int column = task.getStartDate().getDayOfWeek().getValue() + 1;

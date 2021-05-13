@@ -18,6 +18,7 @@ import javafx.scene.layout.BorderPane;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import Controller.Controller;
 import Model.Task;
 import javafx.scene.layout.StackPane;
 
@@ -33,11 +34,11 @@ public class MonthView extends AbstractMenu {
     }
     
     //constructor to load into present month
-    public MonthView(Stage stage, ArrayList<Task> tasks) {
+    public MonthView(Stage stage, Controller control) {
         super();
         
         this.stage = stage;
-        this.tasks = tasks;
+        this.control = control;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
@@ -50,11 +51,11 @@ public class MonthView extends AbstractMenu {
     }
     
     //constructor to load into specific date
-    public MonthView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
+    public MonthView(Stage stage, LocalDate date, Controller control) {
         super(date);
         
         this.stage = stage;
-        this.tasks = tasks;
+        this.control = control;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
@@ -107,12 +108,14 @@ public class MonthView extends AbstractMenu {
         for(int i = 0; i < numOfWeeks; i++) {                    
             //make the empty cells for each day of the week
             for(int j = 0; j < 7; j++) {
-              //used to make calendar look nice
+            	//used to make calendar look nice
                 VBox dayBox = new VBox();
+                //single day box styling 
                 dayBox.setPrefSize(CELL_WIDTH, CELL_HEIGHT);
                 dayBox.setMinSize(CELL_WIDTH, CELL_HEIGHT);
                 dayBox.setMaxSize(CELL_WIDTH, CELL_HEIGHT);
                 dayBox.setStyle("-fx-background-color: whitesmoke; -fx-border-width: 1px; -fx-border-color: darkgray");
+                
                 BorderPane dateAndExtra = new BorderPane();
                 Text extra = new Text();
                 StackPane extraPane = new StackPane();
@@ -167,12 +170,13 @@ public class MonthView extends AbstractMenu {
         BorderPane.setMargin(finalCalendar, new Insets(0.0, 0.0, 10.0, 10.0));
     }
     
+    //TODO loads correctly for transient tasks needs to handle repeats 
     //add boxes for tasks on calendar
     public void drawTasks() {
-        for(Task task : tasks) {
+        for(Task task : control.getMonthYearTasks(date.getMonthValue(), date.getYear())) {
             //get grid indexes, height of box, and offset of the start of the box
-            int row = (int) Math.floor((date.getDayOfMonth() - 1 + firstDay) / 7);
-            int column = (date.getDayOfMonth() - 1 + firstDay) - (7 * row);
+            int row = (int) Math.floor((task.getStartDate().getDayOfMonth() - 1 + firstDay) / 7);
+            int column = (task.getStartDate().getDayOfMonth() - 1 + firstDay) - (7 * row);
             
             //only show the first 5 tasks of a given day, then show a counter in top left for how many more tasks there are that day
             //checks > 6 to account for the child node used to show the date

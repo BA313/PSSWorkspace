@@ -18,6 +18,7 @@ import javafx.scene.layout.BorderPane;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import Controller.Controller;
 import Model.Task;
 
 import java.lang.Math;
@@ -34,11 +35,11 @@ public class DayView extends AbstractMenu {
     }
     
     //constructor to load into present day
-    DayView(Stage stage, ArrayList<Task> tasks) {
+    DayView(Stage stage, Controller control) {
         super();
         
         this.stage = stage;
-        this.tasks = tasks;
+        this.control = control;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
@@ -48,11 +49,11 @@ public class DayView extends AbstractMenu {
     }
     
     //constructor to load into specific date
-    public DayView(Stage stage, LocalDate date, ArrayList<Task> tasks) {
+    public DayView(Stage stage, LocalDate date, Controller control) {
         super(date);
         
         this.stage = stage;
-        this.tasks = tasks;
+        this.control = control;
         scene = new Scene(pane, 1280, 720);
         stage.setTitle("Month View");
         stage.setScene(scene);
@@ -178,10 +179,10 @@ public class DayView extends AbstractMenu {
         //set alignment and margins
         BorderPane.setMargin(finalCalendar, new Insets(0.0, 5.0, 10.0, 10.0));
     }
-    
+    //TODO CHANGE
     //add boxes for tasks on calendar
     public void drawTasks() {
-        for(Task task : tasks) {
+        for(Task task : control.getTasks()) {
             //get grid index, height of box, and offset of the start of the box
             int row = task.getStartTime().getHour();
             double height = (CELL_HEIGHT / 4) * (task.getDuration() / 15) + 1;

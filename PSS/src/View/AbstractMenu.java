@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import java.util.Locale;
 
+import Controller.Controller;
 import Model.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -39,7 +40,7 @@ public abstract class AbstractMenu {
 	//scene and stage for each view, list of tasks, mini month calendar view, drop box to select view, and info needed to create a new task
 	protected Scene scene;
 	protected Stage stage;
-	protected ArrayList<Task> tasks;
+	protected Controller control;
 	protected GridPane miniMonth;
 	protected BorderPane pane, rightPane;
 	protected ComboBox<String> select;
@@ -288,7 +289,7 @@ public abstract class AbstractMenu {
         create.setOnAction(v -> {
         	boolean done = true;
         	try {
-        		tasks.add(createTask());
+        		control.addTask(createTask());
         	}catch(Exception e){
         		//check for errors
         		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration is not empty");
