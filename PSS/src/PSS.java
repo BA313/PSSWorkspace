@@ -28,37 +28,10 @@ public class PSS extends Application {
         date = LocalDate.now();
         this.stage = stage;
         
+        //Initialize controller to handle data fetches 
         control = new Controller();
         
-//        LocalTime start = LocalTime.now().withHour(0).withMinute(15);
-//        LocalTime end = LocalTime.from(start).plusMinutes(90);
-//        tasks.add(new Task("A", date, date, 90, false, start, end));
-//        
-//        start = LocalTime.now().withHour(3).withMinute(30);
-//        end = LocalTime.from(start).plusMinutes(15);
-//        tasks.add(new Task("B", date, date, 15, true, start, end));
-//        
-//        start = LocalTime.now().withHour(5).withMinute(45);
-//        end = LocalTime.from(start).plusMinutes(45);
-//        tasks.add(new Task("C", date, date, 45, false, start, end));
-//        
-//        start = LocalTime.now().withHour(7).withMinute(0);
-//        end = LocalTime.from(start).plusMinutes(120);
-//        tasks.add(new Task("D", date, date, 120, true, start, end));
-//        
-//        start = LocalTime.now().withHour(10).withMinute(15);
-//        end = LocalTime.from(start).plusMinutes(90);
-//        tasks.add(new Task("E", date, date, 90, true, start, end));
-//        
-//        start = LocalTime.now().withHour(15).withMinute(45);
-//        end = LocalTime.from(start).plusMinutes(30);
-//        tasks.add(new Task("F", date, date, 30, false, start, end));
-//        
-//        start = LocalTime.now().withHour(22).withMinute(45);
-//        end = LocalTime.from(start).plusMinutes(90);
-//        tasks.add(new Task("G", date, date, 90, false, start, end));
-        
-        month = new MonthView(stage, date, control.getTasks());
+        month = new MonthView(stage, date, control);
         
         //change view when drop box selection changes
         month.getSelect().getSelectionModel().selectedItemProperty().addListener( (options, oldValue, newValue) -> {
@@ -87,7 +60,7 @@ public class PSS extends Application {
     public void switchView(String view) {
         switch (view) {
         case "Day":
-            day = new DayView(stage, date, control.getTasks());
+            day = new DayView(stage, date, control);
             
             //change view when drop box selection changes
             day.getSelect().getSelectionModel().selectedItemProperty().addListener( (options, oldValue, newValue) -> {
@@ -112,7 +85,7 @@ public class PSS extends Application {
 
             break;
         case "Week":
-            week = new WeekView(stage, date, control.getTasks());
+            week = new WeekView(stage, date, control);
 
             //change view when drop box selection changes
             week.getSelect().getSelectionModel().selectedItemProperty().addListener( (options, oldValue, newValue) -> {
@@ -137,7 +110,7 @@ public class PSS extends Application {
             
             break;
         case "Month":
-            month = new MonthView(stage, date, control.getTasks());
+            month = new MonthView(stage, date, control);
             
             //change view when drop box selection changes
             month.getSelect().getSelectionModel().selectedItemProperty().addListener( (options, oldValue, newValue) -> {

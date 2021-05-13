@@ -4,6 +4,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import java.util.Locale;
+<<<<<<< HEAD
+=======
+
+import Controller.Controller;
+>>>>>>> main
 import Model.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,7 +19,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
-import java.util.ArrayList;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -38,7 +42,7 @@ public abstract class AbstractMenu {
 	//scene and stage for each view, list of tasks, mini month calendar view, drop box to select view, and info needed to create a new task
 	protected Scene scene;
 	protected Stage stage;
-	protected ArrayList<Task> tasks;
+	protected Controller control;
 	protected GridPane miniMonth;
 	protected BorderPane pane, rightPane;
 	protected ComboBox<String> select;
@@ -258,7 +262,7 @@ public abstract class AbstractMenu {
         create.setOnAction(v -> {
         	boolean done = true;
         	try {
-        		tasks.add(createTask());
+        		control.addTask(createTask());
         	}catch(Exception e){
         		//check for errors
         		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration is not empty");
@@ -364,6 +368,8 @@ public abstract class AbstractMenu {
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
         rightPane.setCenter(taskPane);
+        
+        //TODO Create Functionality for Cancel Task and Edit Task
         
         //close pane when cancel button pressed
         close.setOnAction(event -> rightPane.setCenter(null));
