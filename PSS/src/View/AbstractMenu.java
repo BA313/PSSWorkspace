@@ -4,11 +4,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import java.util.Locale;
-<<<<<<< HEAD
-=======
-
 import Controller.Controller;
->>>>>>> main
 import Model.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
