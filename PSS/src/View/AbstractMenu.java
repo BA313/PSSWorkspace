@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import java.util.Locale;
 import Controller.Controller;
+import Model.Anti;
 import Model.Recurring;
 import Model.Task;
 import Model.Transient;
@@ -46,7 +47,7 @@ public abstract class AbstractMenu {
 	protected ComboBox<String> select;
 	protected LocalDate date;
 	protected int numOfWeeks, firstDay;
-	protected Button left, right, addTask, close, create, cancelTask;
+	protected Button left, right, addTask, close, create, cancelTask, delete;
 	protected final int MINI_SIZE = 35;
 	protected TextField name, duration;
 	protected CheckBox repeat;
@@ -282,17 +283,18 @@ public abstract class AbstractMenu {
         close.setOnAction(event -> rightPane.setCenter(null));
     }
     
-    //display a task with option to edit task info
-    public void addTask(Task task) {
+    public void editTask(Task task) {
         //initialize controls
         close = new Button("Close");
         cancelTask = new Button("Cancel Task");
-        create = new Button("Edit");
+        create = new Button("Save");
+        delete = new Button("Delete");
         name = new TextField(task.getName());
         duration = new TextField(Integer.toString(task.getDuration()));
         repeat = new CheckBox("Repeat");
         startDate = new DatePicker(task.getStartDate());
-        endDate = new DatePicker(task.getEndDate());
+        endDate = new DatePicker(task.getStartDate());
+        
         
         startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
             @Override
@@ -340,11 +342,12 @@ public abstract class AbstractMenu {
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
         startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
+        endDateLabel.setVisible(false);
         
         //group buttons together
         HBox buttons = new HBox(10);
         buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(close, cancelTask, create);
+        buttons.getChildren().addAll(close,delete, cancelTask, create);
         
         //show/hide end date selector based on whether the task is set to repeat
         if(task.getRepeat()) {
@@ -371,7 +374,49 @@ public abstract class AbstractMenu {
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
         rightPane.setCenter(taskPane);
         
-        //TODO Create Functionality for Cancel Task and Edit Task
+        //handles saving an edit
+        create.setOnAction(v -> {
+        	boolean done = true;
+        	control.removeTask(task);
+        	try {
+        		if(getRepeat()) {
+        			control.addTask(createRTask());
+        		}else {
+        			control.addTask(createTTask());
+        		}
+        	}catch(Exception e){
+        		//check for errors
+        		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration is not empty");
+        		done = false;
+        	}
+        	//close and refresh page if done
+        	if(done) {
+	        	buildView();
+	        	drawTasks();
+	        	rightPane.setCenter(null);
+        	}
+        });
+        
+        //handles creating antitask
+        cancelTask.setOnAction(v -> {
+        	if(task.getType() == Task.ANTI_TASK) {
+        		Anti temp = (Anti) task;
+        		control.unSuppress(temp.getCancelled());
+        		control.removeTask(task);
+        	}else {
+        		control.addTask(createATask(task));
+        	}
+        	buildView();
+        	drawTasks();
+        	rightPane.setCenter(null);
+        });
+        
+        delete.setOnAction(v -> {
+        	control.removeTask(task);
+        	buildView();
+        	drawTasks();
+        	rightPane.setCenter(null);
+        });
         
         //close pane when cancel button pressed
         close.setOnAction(event -> rightPane.setCenter(null));
@@ -418,6 +463,12 @@ public abstract class AbstractMenu {
 	private Task createRTask() {
 		Recurring newTask = new Recurring(getName(), getStartDate(), getEndDate(), getDuration(),
     			getRepeat(), getStartTime(), 0);
+    	return newTask;
+	}
+	
+	private Task createATask(Task task) {
+		Anti newTask = new Anti(getName(), getStartDate(), getEndDate(), getDuration(),
+    			getRepeat(), getStartTime(), task);
     	return newTask;
 	}
 

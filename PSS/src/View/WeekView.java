@@ -185,6 +185,8 @@ public class WeekView extends AbstractMenu {
         BorderPane.setMargin(finalCalendar, new Insets(0.0, 5.0, 10.0, 10.0));
     }
     
+    //TODO UPDATE
+    
     //add boxes for tasks on calendar
     public void drawTasks() {
         for(Task task : control.getWeekTasks(date)) {
@@ -196,13 +198,34 @@ public class WeekView extends AbstractMenu {
             
             //rectangle to add to calendar
             Rectangle rect = new Rectangle(CELL_WIDTH, height);
-            rect.setFill(Color.BLUE);
-            rect.setOpacity(0.5);
+            switch(task.getType()) {
+        	case Task.ANTI_TASK:
+        		rect.setFill(Color.YELLOW);
+        		rect.setOpacity(0.5);
+        		break;
+        	case Task.RECURRING_TASK:
+        		rect.setFill(Color.GREEN);
+        		rect.setOpacity(0.5);
+        		break;
+        	case Task.TRANSIENT_TASK:
+        		rect.setFill(Color.BLUE);
+        		if(task.getSuppressed())
+        			rect.setOpacity(0.1);
+        		else
+        			rect.setOpacity(0.5);
+        		break;
+            }
             
             //label with task name, and on click listener to show task details/edit task
             Label label = new Label(task.getName(), rect);
+            //limit the length of the name
+            if(task.getName().length() > 10) {
+                label = new Label(task.getName().substring(0, 6) + "...", rect);
+            } else {
+                label = new Label(task.getName(), rect);
+            }
             label.setContentDisplay(ContentDisplay.CENTER);
-            label.setOnMouseClicked(v -> addTask(task));
+            label.setOnMouseClicked(v -> editTask(task));
             label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");
             
             //need to add box to a pane first or it wouldn't draw right

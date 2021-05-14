@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import Controller.Controller;
+import Model.Recurring;
 import Model.Task;
 import javafx.scene.layout.StackPane;
 
@@ -170,7 +171,6 @@ public class MonthView extends AbstractMenu {
         BorderPane.setMargin(finalCalendar, new Insets(0.0, 0.0, 10.0, 10.0));
     }
     
-    //TODO loads correctly for transient tasks needs to handle repeats 
     //add boxes for tasks on calendar
     public void drawTasks() {
         for(Task task : control.getMonthYearTasks(date)) {
@@ -220,8 +220,23 @@ public class MonthView extends AbstractMenu {
         } else {
             //new rectangle to show one of the first 5 tasks
             Rectangle rect = new Rectangle(CELL_WIDTH, 12);
-            rect.setFill(Color.BLUE);
-            rect.setOpacity(0.5);
+            switch(task.getType()) {
+            	case Task.ANTI_TASK:
+            		rect.setFill(Color.YELLOW);
+            		rect.setOpacity(0.5);
+            		break;
+            	case Task.RECURRING_TASK:
+            		rect.setFill(Color.GREEN);
+            		rect.setOpacity(0.5);
+            		break;
+            	case Task.TRANSIENT_TASK:
+            		rect.setFill(Color.BLUE);
+            		if(task.getSuppressed())
+            			rect.setOpacity(0.1);
+            		else
+            			rect.setOpacity(0.5);
+            		break;
+            }
             Label label;
             
             //limit the length of the name
@@ -233,9 +248,10 @@ public class MonthView extends AbstractMenu {
             
             //add on click listener to the label to show the task details/edit the task, and add the to calendar
             label.setContentDisplay(ContentDisplay.CENTER);
-            label.setOnMouseClicked(v -> addTask(task));
+            label.setOnMouseClicked(v -> editTask(task));
             label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");
             nodes[row][column].getChildren().add(label);
         }
     }
+
 }
