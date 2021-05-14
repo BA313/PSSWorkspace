@@ -283,11 +283,11 @@ public abstract class AbstractMenu {
     }
     
     //display a task with option to edit task info
-    public void addTask(Task task) {
+    public void editTask(Recurring task) {
         //initialize controls
         close = new Button("Close");
         cancelTask = new Button("Cancel Task");
-        create = new Button("Edit");
+        create = new Button("Save");
         name = new TextField(task.getName());
         duration = new TextField(Integer.toString(task.getDuration()));
         repeat = new CheckBox("Repeat");
@@ -340,6 +340,102 @@ public abstract class AbstractMenu {
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
         startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
+        
+        //group buttons together
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(close, cancelTask, create);
+        
+        //show/hide end date selector based on whether the task is set to repeat
+        if(task.getRepeat()) {
+            endDateLabel.setVisible(true);
+        } else {
+            endDateLabel.setVisible(false);
+        }
+        
+        //listener to show end date selector if set to repeat
+        repeat.selectedProperty().addListener(v -> {
+           if(repeat.isSelected()) {
+               endDateLabel.setVisible(true);
+           } else {
+               endDateLabel.setVisible(false);
+           }
+        });
+        
+        //build final pane
+        VBox taskPane = new VBox(10);
+        taskPane.setAlignment(Pos.CENTER);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, buttons);
+        taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
+        
+        BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
+        rightPane.setCenter(taskPane);
+        
+        //TODO Create Functionality for Cancel Task and Edit Task
+        
+        //close pane when cancel button pressed
+        close.setOnAction(event -> rightPane.setCenter(null));
+    }
+    
+    public void editTask(Task task) {
+        //initialize controls
+        close = new Button("Close");
+        cancelTask = new Button("Cancel Task");
+        create = new Button("Save");
+        name = new TextField(task.getName());
+        duration = new TextField(Integer.toString(task.getDuration()));
+        repeat = new CheckBox("Repeat");
+        startDate = new DatePicker(task.getStartDate());
+        endDate = new DatePicker();
+        
+        
+        startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
+            @Override
+            public void decrement(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.minusMinutes(15));
+                }
+            }
+
+            @Override
+            public void increment(int num) {
+                if(getValue() == null) {
+                    setValue(LocalTime.now());
+                } else {
+                    LocalTime time = getValue();
+                    setValue(time.plusMinutes(15));
+                }
+            }
+        });
+        
+        startTime.setEditable(true);
+        startTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
+        startTime.getValueFactory().setValue(task.getStartTime());
+        repeat.setSelected(task.getRepeat());
+        
+        
+        //only allow numbers to be entered into the duration field
+        duration.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    duration.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+        
+        //add labels for name and duration text fields
+        Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
+                startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
+                startTimeLabel = new Label("Start Time: ", startTime);
+        nameLabel.setContentDisplay(ContentDisplay.RIGHT);
+        durationLabel.setContentDisplay(ContentDisplay.RIGHT);
+        startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
+        endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
+        endDateLabel.setVisible(false);
         
         //group buttons together
         HBox buttons = new HBox(10);

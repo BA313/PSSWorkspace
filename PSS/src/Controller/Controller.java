@@ -97,13 +97,24 @@ public class Controller {
 						//check if the endDate is in this month
 						if(end.getMonthValue() == m) {
 							//if it is check to see if the endDate is in this week
-							if ((weekStart <= end.getDayOfMonth()) 
-									&& (end.getDayOfMonth() < weekEnd)) {
-								weekTasks.add(task);
+							while(end.getMonthValue() == m) {
+								if ((weekStart <= end.getDayOfMonth()) 
+										&& (end.getDayOfMonth() < weekEnd)) {
+									weekTasks.add(task);
+									break;
+								}
+								end = end.minusWeeks(1);
 							}
 						//already checked if the start date is in the week
 						}else if(start.getMonthValue() == m) {
-							continue;
+							while(start.getDayOfMonth() <= date.lengthOfMonth() && start.getMonthValue() == m) {
+								if ((weekStart <= start.getDayOfMonth()) 
+										&& (start.getDayOfMonth() < weekEnd)) {
+									weekTasks.add(task);
+									break;
+								}
+								start = start.plusWeeks(1);
+							}
 						}else {
 							weekTasks.add(task);
 						}
