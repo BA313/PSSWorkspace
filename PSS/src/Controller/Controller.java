@@ -7,6 +7,7 @@ import Model.JsonReader;
 import Model.Task;
 
 //TODO logic for different years
+//TODO Handle overlapping
 
 public class Controller {
 	
