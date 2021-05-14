@@ -59,4 +59,12 @@ public class Task {
     public String toString() {
     	return "Task Name: " + name;
     }
+    
+    public boolean getSuppressed() {
+    	return suppressed;
+    }
+    
+    public boolean setSuppressed(boolean s) {
+    	return suppressed = s;
+    }
 }

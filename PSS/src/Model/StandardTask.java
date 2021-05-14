@@ -39,7 +39,7 @@ public class StandardTask {
         }else if(!type.equals(Task.ANTI_TASK)) {
         	return new Transient(Name, startDate, endDate, (int)newDuration, repeat, startTime);
         }else {
-        	return new Anti(Name, startDate, endDate, (int)newDuration, repeat, startTime);
+        	return new Anti(Name, startDate, endDate, (int)newDuration, repeat, startTime, null);
         }
         
     }

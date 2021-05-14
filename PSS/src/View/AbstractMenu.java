@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import java.util.Locale;
 import Controller.Controller;
+import Model.Anti;
 import Model.Recurring;
 import Model.Task;
 import Model.Transient;
@@ -46,7 +47,7 @@ public abstract class AbstractMenu {
 	protected ComboBox<String> select;
 	protected LocalDate date;
 	protected int numOfWeeks, firstDay;
-	protected Button left, right, addTask, close, create, cancelTask;
+	protected Button left, right, addTask, close, create, cancelTask, delete;
 	protected final int MINI_SIZE = 35;
 	protected TextField name, duration;
 	protected CheckBox repeat;
@@ -282,111 +283,17 @@ public abstract class AbstractMenu {
         close.setOnAction(event -> rightPane.setCenter(null));
     }
     
-    //display a task with option to edit task info
-    public void editTask(Recurring task) {
-        //initialize controls
-        close = new Button("Close");
-        cancelTask = new Button("Cancel Task");
-        create = new Button("Save");
-        name = new TextField(task.getName());
-        duration = new TextField(Integer.toString(task.getDuration()));
-        repeat = new CheckBox("Repeat");
-        startDate = new DatePicker(task.getStartDate());
-        endDate = new DatePicker(task.getEndDate());
-        
-        startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
-            @Override
-            public void decrement(int num) {
-                if(getValue() == null) {
-                    setValue(LocalTime.now());
-                } else {
-                    LocalTime time = getValue();
-                    setValue(time.minusMinutes(15));
-                }
-            }
-
-            @Override
-            public void increment(int num) {
-                if(getValue() == null) {
-                    setValue(LocalTime.now());
-                } else {
-                    LocalTime time = getValue();
-                    setValue(time.plusMinutes(15));
-                }
-            }
-        });
-        
-        startTime.setEditable(true);
-        startTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
-        startTime.getValueFactory().setValue(task.getStartTime());
-        repeat.setSelected(task.getRepeat());
-        
-        
-        //only allow numbers to be entered into the duration field
-        duration.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*")) {
-                    duration.setText(newValue.replaceAll("[^\\d]", ""));
-                }
-            }
-        });
-        
-        //add labels for name and duration text fields
-        Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
-                startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
-                startTimeLabel = new Label("Start Time: ", startTime);
-        nameLabel.setContentDisplay(ContentDisplay.RIGHT);
-        durationLabel.setContentDisplay(ContentDisplay.RIGHT);
-        startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
-        endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
-        
-        //group buttons together
-        HBox buttons = new HBox(10);
-        buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(close, cancelTask, create);
-        
-        //show/hide end date selector based on whether the task is set to repeat
-        if(task.getRepeat()) {
-            endDateLabel.setVisible(true);
-        } else {
-            endDateLabel.setVisible(false);
-        }
-        
-        //listener to show end date selector if set to repeat
-        repeat.selectedProperty().addListener(v -> {
-           if(repeat.isSelected()) {
-               endDateLabel.setVisible(true);
-           } else {
-               endDateLabel.setVisible(false);
-           }
-        });
-        
-        //build final pane
-        VBox taskPane = new VBox(10);
-        taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, buttons);
-        taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
-        
-        BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
-        rightPane.setCenter(taskPane);
-        
-        //TODO Create Functionality for Cancel Task and Edit Task
-        
-        //close pane when cancel button pressed
-        close.setOnAction(event -> rightPane.setCenter(null));
-    }
-    
     public void editTask(Task task) {
         //initialize controls
         close = new Button("Close");
         cancelTask = new Button("Cancel Task");
         create = new Button("Save");
+        delete = new Button("Delete");
         name = new TextField(task.getName());
         duration = new TextField(Integer.toString(task.getDuration()));
         repeat = new CheckBox("Repeat");
         startDate = new DatePicker(task.getStartDate());
-        endDate = new DatePicker();
+        endDate = new DatePicker(task.getStartDate());
         
         
         startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
@@ -440,7 +347,7 @@ public abstract class AbstractMenu {
         //group buttons together
         HBox buttons = new HBox(10);
         buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(close, cancelTask, create);
+        buttons.getChildren().addAll(close,delete, cancelTask, create);
         
         //show/hide end date selector based on whether the task is set to repeat
         if(task.getRepeat()) {
@@ -467,7 +374,47 @@ public abstract class AbstractMenu {
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
         rightPane.setCenter(taskPane);
         
-        //TODO Create Functionality for Cancel Task and Edit Task
+        //handles saving an edit
+        create.setOnAction(v -> {
+        	boolean done = true;
+        	control.removeTask(task);
+        	try {
+        		if(getRepeat()) {
+        			control.addTask(createRTask());
+        		}else {
+        			control.addTask(createTTask());
+        		}
+        	}catch(Exception e){
+        		//check for errors
+        		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration is not empty");
+        		done = false;
+        	}
+        	//close and refresh page if done
+        	if(done) {
+	        	buildView();
+	        	drawTasks();
+	        	rightPane.setCenter(null);
+        	}
+        });
+        
+        //handles creating antitask
+        cancelTask.setOnAction(v -> {
+        	if(task.getType() == Task.ANTI_TASK) {
+        		control.removeTask(task);
+        	}else {
+        		control.addTask(createATask(task));
+        	}
+        	buildView();
+        	drawTasks();
+        	rightPane.setCenter(null);
+        });
+        
+        delete.setOnAction(v -> {
+        	control.removeTask(task);
+        	buildView();
+        	drawTasks();
+        	rightPane.setCenter(null);
+        });
         
         //close pane when cancel button pressed
         close.setOnAction(event -> rightPane.setCenter(null));
@@ -514,6 +461,12 @@ public abstract class AbstractMenu {
 	private Task createRTask() {
 		Recurring newTask = new Recurring(getName(), getStartDate(), getEndDate(), getDuration(),
     			getRepeat(), getStartTime(), 0);
+    	return newTask;
+	}
+	
+	private Task createATask(Task task) {
+		Anti newTask = new Anti(getName(), getStartDate(), getEndDate(), getDuration(),
+    			getRepeat(), getStartTime(), task);
     	return newTask;
 	}
 

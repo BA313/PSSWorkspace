@@ -30,6 +30,10 @@ public class Controller {
 			taskList.add(task);
 		}
 		
+		public void removeTask(Task task) {
+			taskList.remove(task);
+		}
+		
 		//gets all tasks for a certain month and year
 		public ArrayList<Task> getMonthYearTasks(LocalDate date){
 			int m = date.getMonthValue(),  y = date.getYear();
