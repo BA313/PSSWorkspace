@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import Model.JsonReader;
 import Model.Task;
 
+//TODO logic for different years
+
 public class Controller {
 	
 		//Working path to Test Data set
@@ -34,13 +36,14 @@ public class Controller {
 		public ArrayList<Task> getMonthYearTasks(int m, int y){
 			ArrayList<Task> monthTasks = new ArrayList();
 			for(Task task: taskList) {
-				LocalDate temp = task.getStartDate();
-				if(temp.getMonthValue() == m && temp.getYear() == y) {
+				LocalDate start = task.getStartDate();
+				LocalDate end = task.getEndDate();
+				if(start.getMonthValue() == m && start.getYear() == y) {
 					monthTasks.add(task);
 					continue;
 				}
 				if(task.getType().equals(Task.RECURRING_TASK)) {
-					if(temp.getMonthValue() <= m && task.getEndDate().getMonthValue() >= m && temp.getYear() == y) {
+					if(start.getMonthValue() <= m && end.getMonthValue() >= m && start.getYear() == y) {
 						monthTasks.add(task);
 					}
 				}
@@ -49,17 +52,23 @@ public class Controller {
 		}
 		
 		//gets all tasks for a certain day in a month 
-		public ArrayList<Task> getDayMonthTasks(int d, int m, int y){
+		public ArrayList<Task> getDayMonthTasks(LocalDate date){
+			int d = date.getDayOfMonth(),  m = date.getMonthValue(),  y = date.getYear();
 			ArrayList<Task> dayTasks = new ArrayList();
 			for(Task task: taskList) {
-				LocalDate temp = task.getStartDate();
-				if(temp.getMonthValue() == m && temp.getDayOfMonth() == d && temp.getYear() == y) {
+				LocalDate start = task.getStartDate();
+				LocalDate end = task.getEndDate();
+				if(start.getMonthValue() == m && start.getDayOfMonth() == d && start.getYear() == y) {
 					dayTasks.add(task);
 					continue;
 				}
 				if(task.getType().equals(Task.RECURRING_TASK)) {
-					if(temp.getMonthValue() <= m && task.getEndDate().getMonthValue() >= m && temp.getYear() == y) {
-						dayTasks.add(task);
+					if(start.getMonthValue() <= m && end.getMonthValue() >= m && start.getYear() == y) {
+						if(!(end.getMonthValue() == m && d > end.getDayOfMonth()) 
+								&& !(start.getMonthValue() == m && d < start.getDayOfMonth())) {
+							if(date.getDayOfWeek() == start.getDayOfWeek())
+								dayTasks.add(task);
+						}
 					}
 				}
 			}
@@ -72,15 +81,31 @@ public class Controller {
 			int weekStart = d - w;
 			int weekEnd = weekStart + 7;
 			for(Task task: taskList) {
-				LocalDate temp  = task.getStartDate();
-				if(temp.getMonthValue() == m && temp.getYear() == y)
-					if ((weekStart <= temp.getDayOfMonth()) && (temp.getDayOfMonth() < weekEnd)) {
+				LocalDate start = task.getStartDate();
+				LocalDate end = task.getEndDate();
+				if(start.getMonthValue() == m && start.getYear() == y) {
+					if ((weekStart <= start.getDayOfMonth()) && (start.getDayOfMonth() < weekEnd)) {
 						weekTasks.add(task);
 						continue;
+					}
 				}
+				//tests for recurring tasks
 				if(task.getType().equals(Task.RECURRING_TASK)) {
-					if(temp.getMonthValue() <= m && task.getEndDate().getMonthValue() >= m && temp.getYear() == y) {
-						weekTasks.add(task);
+					//check if week is in the month range
+					if(start.getMonthValue() <= m && end.getMonthValue() >= m && start.getYear() == y) {
+						//check if the endDate is in this month
+						if(end.getMonthValue() == m) {
+							//if it is check to see if the endDate is in this week
+							if ((weekStart <= end.getDayOfMonth()) 
+									&& (end.getDayOfMonth() < weekEnd)) {
+								weekTasks.add(task);
+							}
+						//already checked if the start date is in the week
+						}else if(start.getMonthValue() == m) {
+							continue;
+						}else {
+							weekTasks.add(task);
+						}
 					}
 				}
 			}
