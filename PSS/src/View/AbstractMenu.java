@@ -5,7 +5,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import java.util.Locale;
 import Controller.Controller;
+import Model.Recurring;
 import Model.Task;
+import Model.Transient;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -207,7 +209,7 @@ public abstract class AbstractMenu {
         startTime.getValueFactory().setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
         startTime.getValueFactory().setValue(round15Mins(LocalTime.now()));
         
-        duration.setText("1");
+        duration.setText("15");
         
         //only allow numbers to be entered into the duration field
         duration.textProperty().addListener(new ChangeListener<String>() {
@@ -258,7 +260,11 @@ public abstract class AbstractMenu {
         create.setOnAction(v -> {
         	boolean done = true;
         	try {
-        		control.addTask(createTask());
+        		if(getRepeat()) {
+        			control.addTask(createRTask());
+        		}else {
+        			control.addTask(createTTask());
+        		}
         	}catch(Exception e){
         		//check for errors
         		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration is not empty");
@@ -403,10 +409,15 @@ public abstract class AbstractMenu {
 	//used to draw the tasks on the calendars
 	public abstract void drawTasks();
 	
-	private Task createTask() {
-		Task newTask = new Task(getName(), getStartDate(), 
-    			getEndDate(),getDuration(),
+	private Task createTTask() {
+		Transient newTask = new Transient(getName(), getStartDate(), getEndDate(), getDuration(),
     			getRepeat(), getStartTime());
+    	return newTask;
+	}
+	
+	private Task createRTask() {
+		Recurring newTask = new Recurring(getName(), getStartDate(), getEndDate(), getDuration(),
+    			getRepeat(), getStartTime(), 0);
     	return newTask;
 	}
 

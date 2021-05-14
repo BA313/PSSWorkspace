@@ -13,8 +13,6 @@ public class StandardTask {
     private int EndDate;
     private int Frequency;
 
-    //TODO CHANGE -> duration is not in minutes but hrs i.e. 1.25 = 1 hr and 15 mins
-    //TODO two tasks from set 1 are loading in with default time -> fix -> read Date the same as startDate
     public StandardTask(String name, String type, int startDate, int startTime, float duration, int endDate, int frequency) {
         Name = name;
         Type = type;
@@ -33,13 +31,17 @@ public class StandardTask {
                 ? LocalDate.parse(Integer.toString(EndDate), DateTimeFormatter.ofPattern("yyyyMMdd"))
                 : LocalDate.now();      // when LocalDate is not found in this json object
         LocalTime startTime = LocalTime.of(StartTime, 0);
-        int endTimeH = (int) (StartTime + Duration);
-        int endTimeM = Math.max((int) ((StartTime + Duration - endTimeH) * 60), 0);
-        int endTimeS = Math.max((int) ((StartTime + Duration - endTimeH - endTimeM) * 60), 0);
-        LocalTime endTime = LocalTime.of(endTimeH, endTimeM, endTimeS);
+        float newDuration = 60*Duration;
         boolean repeat = Frequency != 0;
-
-        return new Task(Name, startDate, endDate, (int)Duration, repeat, startTime, endTime);
+        String type = Type;
+        if(repeat) {
+        	return new Recurring(Name, startDate, endDate, (int)newDuration, repeat, startTime, Frequency);
+        }else if(!type.equals(Task.ANTI_TASK)) {
+        	return new Transient(Name, startDate, endDate, (int)newDuration, repeat, startTime);
+        }else {
+        	return new Anti(Name, startDate, endDate, (int)newDuration, repeat, startTime);
+        }
+        
     }
 }
 
