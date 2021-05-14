@@ -174,47 +174,68 @@ public class MonthView extends AbstractMenu {
     //add boxes for tasks on calendar
     public void drawTasks() {
         for(Task task : control.getMonthYearTasks(date.getMonthValue(), date.getYear())) {
-            //get grid indexes, height of box, and offset of the start of the box
-            int row = (int) Math.floor((task.getStartDate().getDayOfMonth() - 1 + firstDay) / 7);
-            int column = (task.getStartDate().getDayOfMonth() - 1 + firstDay) - (7 * row);
+        	if(task.getType().equals(Task.RECURRING_TASK)){
+        		
+        		LocalDate current = task.getStartDate();
+        		//CASE start in last month but end in this month
+        		while(current.getMonthValue() < date.getMonthValue() || current.getYear() < date.getYear()) {
+        			current = current.plusWeeks(1);
+        		}
+        		//CASE start and end in same month
+    			//CASE start in month but end in next month
+        		while((current.isBefore(task.getEndDate()) || current.isEqual(task.getEndDate())) 
+        				&& current.getMonthValue() == date.getMonthValue()) {
+        			draw(current.getDayOfMonth(), task);
+        			current = current.plusWeeks(1);
+        		}
+        	}else {
+        			draw(task.getStartDate().getDayOfMonth(), task);
+        	}
             
-            //only show the first 5 tasks of a given day, then show a counter in top left for how many more tasks there are that day
-            //checks > 6 to account for the child node used to show the date
-            if(nodes[row][column].getChildren().size() > 4) {
-                //get excess counter pane for given date
-                StackPane stack = (StackPane) extras[row][column].getLeft();
-                stack.setVisible(true);
-                Text text = (Text) stack.getChildren().get(0);
-                int num = 0;
-                
-                //if not the first task, get current count so that it can be incremented
-                if(text.getText().length() > 1) {
-                    num = Integer.parseInt(text.getText().substring(1));
-                }
-                
-                //increment and display counter
-                num++;
-                text.setText("+" + num);
-            } else {
-                //new rectangle to show one of the first 5 tasks
-                Rectangle rect = new Rectangle(CELL_WIDTH, 12);
-                rect.setFill(Color.BLUE);
-                rect.setOpacity(0.5);
-                Label label;
-                
-                //limit the length of the name
-                if(task.getName().length() > 10) {
-                    label = new Label(task.getName().substring(0, 6) + "...", rect);
-                } else {
-                    label = new Label(task.getName(), rect);
-                }
-                
-                //add on click listener to the label to show the task details/edit the task, and add the to calendar
-                label.setContentDisplay(ContentDisplay.CENTER);
-                label.setOnMouseClicked(v -> addTask(task));
-                label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");
-                nodes[row][column].getChildren().add(label);
+        }
+    }
+    
+    private void draw(int day, Task task) {
+    	//get grid indexes, height of box, and offset of the start of the box
+        int row = (int) Math.floor((day - 1 + firstDay) / 7);
+        int column = (day - 1 + firstDay) - (7 * row);
+        
+        //only show the first 5 tasks of a given day, then show a counter in top left for how many more tasks there are that day
+        //checks > 6 to account for the child node used to show the date
+        if(nodes[row][column].getChildren().size() > 4) {
+            //get excess counter pane for given date
+            StackPane stack = (StackPane) extras[row][column].getLeft();
+            stack.setVisible(true);
+            Text text = (Text) stack.getChildren().get(0);
+            int num = 0;
+            
+            //if not the first task, get current count so that it can be incremented
+            if(text.getText().length() > 1) {
+                num = Integer.parseInt(text.getText().substring(1));
             }
+            
+            //increment and display counter
+            num++;
+            text.setText("+" + num);
+        } else {
+            //new rectangle to show one of the first 5 tasks
+            Rectangle rect = new Rectangle(CELL_WIDTH, 12);
+            rect.setFill(Color.BLUE);
+            rect.setOpacity(0.5);
+            Label label;
+            
+            //limit the length of the name
+            if(task.getName().length() > 10) {
+                label = new Label(task.getName().substring(0, 6) + "...", rect);
+            } else {
+                label = new Label(task.getName(), rect);
+            }
+            
+            //add on click listener to the label to show the task details/edit the task, and add the to calendar
+            label.setContentDisplay(ContentDisplay.CENTER);
+            label.setOnMouseClicked(v -> addTask(task));
+            label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");
+            nodes[row][column].getChildren().add(label);
         }
     }
 }

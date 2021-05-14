@@ -20,7 +20,6 @@ public class Controller {
 			//System.out.print(taskList.get(0).toString());		
 			taskList = JsonReader.readStandardTaskList(filepath+"Set1.json");
 			//System.out.println(taskList.get(0).toString());
-			//taskList = new ArrayList<Task>();
 		}
 		
 		public ArrayList<Task> getTasks() {
@@ -38,6 +37,12 @@ public class Controller {
 				LocalDate temp = task.getStartDate();
 				if(temp.getMonthValue() == m && temp.getYear() == y) {
 					monthTasks.add(task);
+					continue;
+				}
+				if(task.getType().equals(Task.RECURRING_TASK)) {
+					if(temp.getMonthValue() <= m && task.getEndDate().getMonthValue() >= m && temp.getYear() == y) {
+						monthTasks.add(task);
+					}
 				}
 			}
 			return monthTasks;
@@ -50,6 +55,12 @@ public class Controller {
 				LocalDate temp = task.getStartDate();
 				if(temp.getMonthValue() == m && temp.getDayOfMonth() == d && temp.getYear() == y) {
 					dayTasks.add(task);
+					continue;
+				}
+				if(task.getType().equals(Task.RECURRING_TASK)) {
+					if(temp.getMonthValue() <= m && task.getEndDate().getMonthValue() >= m && temp.getYear() == y) {
+						dayTasks.add(task);
+					}
 				}
 			}
 			return dayTasks;
@@ -65,6 +76,12 @@ public class Controller {
 				if(temp.getMonthValue() == m && temp.getYear() == y)
 					if ((weekStart <= temp.getDayOfMonth()) && (temp.getDayOfMonth() < weekEnd)) {
 						weekTasks.add(task);
+						continue;
+				}
+				if(task.getType().equals(Task.RECURRING_TASK)) {
+					if(temp.getMonthValue() <= m && task.getEndDate().getMonthValue() >= m && temp.getYear() == y) {
+						weekTasks.add(task);
+					}
 				}
 			}
 			return weekTasks;
