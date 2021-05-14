@@ -223,15 +223,20 @@ public class MonthView extends AbstractMenu {
             switch(task.getType()) {
             	case Task.ANTI_TASK:
             		rect.setFill(Color.YELLOW);
+            		rect.setOpacity(0.5);
             		break;
             	case Task.RECURRING_TASK:
             		rect.setFill(Color.GREEN);
+            		rect.setOpacity(0.5);
             		break;
             	case Task.TRANSIENT_TASK:
             		rect.setFill(Color.BLUE);
+            		if(task.getSuppressed())
+            			rect.setOpacity(0.1);
+            		else
+            			rect.setOpacity(0.5);
             		break;
             }
-            rect.setOpacity(0.5);
             Label label;
             
             //limit the length of the name

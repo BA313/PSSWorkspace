@@ -201,18 +201,29 @@ public class WeekView extends AbstractMenu {
             switch(task.getType()) {
         	case Task.ANTI_TASK:
         		rect.setFill(Color.YELLOW);
+        		rect.setOpacity(0.5);
         		break;
         	case Task.RECURRING_TASK:
         		rect.setFill(Color.GREEN);
+        		rect.setOpacity(0.5);
         		break;
         	case Task.TRANSIENT_TASK:
         		rect.setFill(Color.BLUE);
+        		if(task.getSuppressed())
+        			rect.setOpacity(0.1);
+        		else
+        			rect.setOpacity(0.5);
         		break;
             }
-            rect.setOpacity(0.5);
             
             //label with task name, and on click listener to show task details/edit task
             Label label = new Label(task.getName(), rect);
+            //limit the length of the name
+            if(task.getName().length() > 10) {
+                label = new Label(task.getName().substring(0, 6) + "...", rect);
+            } else {
+                label = new Label(task.getName(), rect);
+            }
             label.setContentDisplay(ContentDisplay.CENTER);
             label.setOnMouseClicked(v -> editTask(task));
             label.setStyle("-fx-font-weight: bold; -fx-text-fill: white");

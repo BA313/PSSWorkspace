@@ -26,6 +26,15 @@ public class Controller {
 			return taskList;
 		}
 		
+		public void unSuppress(Task task) {
+			for(Task t: taskList) {
+				if(task.equals(task)) {
+					t.setSuppressed(false);
+					break;
+				}
+			}
+		}
+		
 		public void addTask(Task task) {
 			taskList.add(task);
 		}

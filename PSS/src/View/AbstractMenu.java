@@ -400,6 +400,8 @@ public abstract class AbstractMenu {
         //handles creating antitask
         cancelTask.setOnAction(v -> {
         	if(task.getType() == Task.ANTI_TASK) {
+        		Anti temp = (Anti) task;
+        		control.unSuppress(temp.getCancelled());
         		control.removeTask(task);
         	}else {
         		control.addTask(createATask(task));
