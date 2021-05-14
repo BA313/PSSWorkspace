@@ -173,7 +173,7 @@ public class MonthView extends AbstractMenu {
     //TODO loads correctly for transient tasks needs to handle repeats 
     //add boxes for tasks on calendar
     public void drawTasks() {
-        for(Task task : control.getMonthYearTasks(date.getMonthValue(), date.getYear())) {
+        for(Task task : control.getMonthYearTasks(date)) {
         	if(task.getType().equals(Task.RECURRING_TASK)){
         		
         		LocalDate current = task.getStartDate();

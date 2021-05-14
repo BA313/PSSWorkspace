@@ -187,9 +187,7 @@ public class WeekView extends AbstractMenu {
     
     //add boxes for tasks on calendar
     public void drawTasks() {
-    	int day = date.getDayOfMonth();
-    	int week = date.getDayOfWeek().getValue();
-        for(Task task : control.getWeekTasks(day, week, date.getMonthValue(), date.getYear())) {
+        for(Task task : control.getWeekTasks(date)) {
             //get grid indexes, height of box, and offset of the start of the box
             int row = task.getStartTime().getHour();
             int column = task.getStartDate().getDayOfWeek().getValue() + 1;

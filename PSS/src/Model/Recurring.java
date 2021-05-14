@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class Recurring extends Task {
 	
+	//TODO for future implementation of varied repeats
 	private int frequency;
 	
 	public Recurring(String name, LocalDate startDate, LocalDate endDate, int duration, boolean repeat,
