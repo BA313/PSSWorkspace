@@ -137,5 +137,40 @@ public class Controller {
 			}
 			return weekTasks;
 		}
-
+		
+		//Verifies that new transient/recurring task do not overlap
+		public void checkOverlap(Task task) {
+			boolean overlapped = false; 
+			int taskStartTime = task.getStartTime().getHour()*100+task.getStartTime().getMinute(); //Convert LocalTime to int
+			int taskEndTime = taskStartTime + task.getDuration()/60*100 + task.getDuration()%60; //Get end time by adding duration and convert minutes to hours
+			for(Task tasks : taskList) {
+				int tasksStartTime = tasks.getStartTime().getHour()*100+tasks.getStartTime().getMinute(); //Converts LocalTime to int
+				int tasksEndTime = tasksStartTime + tasks.getDuration()/60*100 + tasks.getDuration()%60; //Get end time by adding duration and convert minutes to hours
+				if(task.getStartDate().equals(tasks.getStartDate()))
+				{			
+					if(task.getStartTime().equals(tasks.getStartTime()))
+					{
+						System.out.println("Start Time overlaps");
+						overlapped = true;
+					}
+					else if(taskStartTime > tasksStartTime && taskStartTime <= tasksEndTime)
+						{
+						System.out.println("Start Time interferes with " + tasks.getName());
+						overlapped = true;
+						}
+					else if(taskEndTime >= tasksStartTime && taskEndTime <= tasksEndTime)
+					{
+						System.out.println("End Time for new task intereferes with " + tasks.getName());
+						overlapped = true;
+					}
+					else if(taskStartTime < tasksStartTime && taskEndTime > tasksEndTime)
+					{
+						System.out.println("The task overlaps with " + tasks.getName());
+						overlapped = true;
+					}
+				}
+			}
+			if(!overlapped)
+				taskList.add(task);
+		}
 }

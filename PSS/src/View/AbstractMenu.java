@@ -1,41 +1,41 @@
 package View;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
-import java.util.Locale;
-import Controller.Controller;
-import Model.Anti;
-import Model.Recurring;
-import Model.Task;
-import Model.Transient;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.util.converter.LocalTimeStringConverter;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DatePicker;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.WeekFields;
+import java.util.Locale;
+
+import Controller.Controller;
+import Model.Anti;
+import Model.Recurring;
+import Model.Task;
+import Model.Transient;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.util.converter.LocalTimeStringConverter;
 
 public abstract class AbstractMenu {
 	//scene and stage for each view, list of tasks, mini month calendar view, drop box to select view, and info needed to create a new task
@@ -262,9 +262,9 @@ public abstract class AbstractMenu {
         	boolean done = true;
         	try {
         		if(getRepeat()) {
-        			control.addTask(createRTask());
+        			control.checkOverlap(createRTask());
         		}else {
-        			control.addTask(createTTask());
+        			control.checkOverlap(createTTask());
         		}
         	}catch(Exception e){
         		//check for errors
@@ -380,9 +380,9 @@ public abstract class AbstractMenu {
         	control.removeTask(task);
         	try {
         		if(getRepeat()) {
-        			control.addTask(createRTask());
+        			control.checkOverlap(createRTask());
         		}else {
-        			control.addTask(createTTask());
+        			control.checkOverlap(createTTask());
         		}
         	}catch(Exception e){
         		//check for errors
