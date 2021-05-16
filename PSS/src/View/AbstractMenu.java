@@ -293,7 +293,7 @@ public abstract class AbstractMenu {
         duration = new TextField(Integer.toString(task.getDuration()));
         repeat = new CheckBox("Repeat");
         startDate = new DatePicker(task.getStartDate());
-        endDate = new DatePicker(task.getStartDate());
+        endDate = new DatePicker(task.getEndDate());
         
         
         startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
@@ -462,7 +462,7 @@ public abstract class AbstractMenu {
 	
 	private Task createRTask() {
 		Recurring newTask = new Recurring(getName(), getStartDate(), getEndDate(), getDuration(),
-    			getRepeat(), getStartTime(), 0);
+    			getRepeat(), getStartTime(), 7);
     	return newTask;
 	}
 	
