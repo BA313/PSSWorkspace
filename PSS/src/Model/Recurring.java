@@ -2,7 +2,6 @@ package Model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 public class Recurring extends Task {
 	
@@ -15,5 +14,8 @@ public class Recurring extends Task {
 		this.frequency = frequency;
 	}
 	
+	public int getFrequency() {
+		return frequency;
+	}
 
 }

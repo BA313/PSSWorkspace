@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import Model.JsonReader;
+import Model.Recurring;
 import Model.Task;
-
 //TODO logic for different years
 //TODO Handle overlapping
 
@@ -76,11 +76,16 @@ public class Controller {
 					continue;
 				}
 				if(task.getType().equals(Task.RECURRING_TASK)) {
-					if(start.isBefore(date.plusMonths(1)) && end.isAfter(date.minusMonths(1))) {
-						if(!(end.getMonthValue() == m && d > end.getDayOfMonth()) 
-								&& !(start.getMonthValue() == m && d < start.getDayOfMonth())) {
-							if(date.getDayOfWeek() == start.getDayOfWeek())
-								dayTasks.add(task);
+					if(start.isBefore(date)&& (end.isAfter(date) || end.equals(date))) { //Check if current day is within start and end Date
+						Recurring RTask = (Recurring)task;
+						
+						while(start.getMonthValue() <= m && start.getYear() <= y) { //Loop exceed month
+							if(start.getDayOfMonth() == d && start.getMonthValue() == m && start.getYear() == y) { //if exact date is found 
+								Task newTask = new Task(task.getName(),task.getType(),start,task.getEndDate(),task.getDuration(),task.getRepeat(),task.getStartTime());
+								dayTasks.add(newTask);
+								break;
+							}
+							start = start.plusDays(RTask.getFrequency()); //Increment recurring task by frequency
 						}
 					}
 				}
@@ -106,6 +111,8 @@ public class Controller {
 				}
 				//tests for recurring tasks
 				if(task.getType().equals(Task.RECURRING_TASK)) {
+					Recurring RTask = (Recurring)task;
+					
 					//check if week is in the month range
 					if(start.isBefore(date.plusMonths(1)) && end.isAfter(date.minusMonths(1))) {
 						//check if the endDate is in this month
@@ -117,7 +124,7 @@ public class Controller {
 									weekTasks.add(task);
 									break;
 								}
-								end = end.minusWeeks(1);
+								end = end.minusDays(RTask.getFrequency());
 							}
 						//already checked if the start date is in the week
 						}else if(start.getMonthValue() == m) {
@@ -127,7 +134,7 @@ public class Controller {
 									weekTasks.add(task);
 									break;
 								}
-								start = start.plusWeeks(1);
+								start = start.plusDays(RTask.getFrequency());
 							}
 						}else {
 							weekTasks.add(task);
@@ -138,39 +145,138 @@ public class Controller {
 			return weekTasks;
 		}
 		
-		//Verifies that new transient/recurring task do not overlap
-		public void checkOverlap(Task task) {
+		//Verifies that new transient task do not overlap
+		public void checkOverlap(Task newTask) {
 			boolean overlapped = false; 
-			int taskStartTime = task.getStartTime().getHour()*100+task.getStartTime().getMinute(); //Convert LocalTime to int
-			int taskEndTime = taskStartTime + task.getDuration()/60*100 + task.getDuration()%60; //Get end time by adding duration and convert minutes to hours
+
 			for(Task tasks : taskList) {
-				int tasksStartTime = tasks.getStartTime().getHour()*100+tasks.getStartTime().getMinute(); //Converts LocalTime to int
-				int tasksEndTime = tasksStartTime + tasks.getDuration()/60*100 + tasks.getDuration()%60; //Get end time by adding duration and convert minutes to hours
-				if(task.getStartDate().equals(tasks.getStartDate()))
-				{			
-					if(task.getStartTime().equals(tasks.getStartTime()))
-					{
-						System.out.println("Start Time overlaps");
+				if(overlapped) //Base Case
+					break;				
+				else if(tasks.getType() == Task.RECURRING_TASK && newTask.getType() == Task.TRANSIENT_TASK) { //Check if new Transient Task overlaps Recurring Task
+					Recurring RTask = (Recurring)tasks;
+					if(checkRecurringOverlap(newTask, RTask)) { 
 						overlapped = true;
-					}
-					else if(taskStartTime > tasksStartTime && taskStartTime <= tasksEndTime)
-						{
-						System.out.println("Start Time interferes with " + tasks.getName());
-						overlapped = true;
-						}
-					else if(taskEndTime >= tasksStartTime && taskEndTime <= tasksEndTime)
-					{
-						System.out.println("End Time for new task intereferes with " + tasks.getName());
-						overlapped = true;
-					}
-					else if(taskStartTime < tasksStartTime && taskEndTime > tasksEndTime)
-					{
-						System.out.println("The task overlaps with " + tasks.getName());
-						overlapped = true;
+						break;
 					}
 				}
+				else if(newTask.getType() == Task.RECURRING_TASK && tasks.getType() == Task.RECURRING_TASK) { //Checks new Recurring Task to other Recurring tasks
+					Recurring newRTask = (Recurring)newTask;
+					Recurring RTask = (Recurring)tasks;
+					if(checkNewRecurringOverlap(newRTask, RTask))
+					{
+						overlapped = true;
+						break;
+					}
+				}
+				else if(newTask.getType() == Task.RECURRING_TASK && tasks.getType() == Task.TRANSIENT_TASK) {	//Check new Recurring Task with other transient tasks
+					Recurring newRTask = (Recurring)newTask;
+					if(checkRecurringOverlap(tasks, newRTask))
+					{
+						overlapped = true;
+						break;
+					}
+				}
+				else {//Compare new Transient Task to other Transient Tasks
+					if(newTask.getStartDate().equals(tasks.getStartDate()))
+						if(checkTimeOverlap(newTask,tasks))
+						{
+							overlapped = true;
+							break;
+						}
+				}
 			}
-			if(!overlapped)
-				taskList.add(task);
+			if(!overlapped) //If no overlap with other tasks
+				taskList.add(newTask);
 		}
+		
+		//Verifies that times do not collide
+		private boolean checkTimeOverlap(Task newTask, Task taskInList) {
+			int taskStartTime = taskInList.getStartTime().getHour()*100 + taskInList.getStartTime().getMinute(); //Converts LocalTime to int of 2400 format
+			int taskEndTime = taskStartTime + taskInList.getDuration()/60*100 + taskInList.getDuration()%60; //Get end time by adding duration and convert minutes to hours
+			int newTaskStartTime = newTask.getStartTime().getHour()*100 + newTask.getStartTime().getMinute(); //Convert LocalTime to int of 2400 format
+			int newTaskEndTime = newTaskStartTime + newTask.getDuration()/60*100 + newTask.getDuration()%60; //Get end time by adding duration and convert minutes to hours
+			
+			if(taskEndTime % 100 >= 60) //Checks if EndTime has minutes of 60
+				taskEndTime += 100 - 60;
+			if(newTaskEndTime % 100 >= 60) //Checks if EndTime has 60 minutes
+				newTaskEndTime += 100 - 60;
+			
+			if(newTask.getStartTime().equals(taskInList.getStartTime())) //Check if same startTime
+			{
+				System.out.println("Start Time overlaps with " + taskInList.getName());
+				return true;
+			}
+			else if(newTaskStartTime > taskStartTime && newTaskStartTime <= taskEndTime) //Checks if StartTime is in between a task
+			{
+				System.out.println("Time interferes with " + taskInList.getName());
+				return true;
+			}
+			else if(newTaskEndTime >= taskStartTime && newTaskEndTime <= taskEndTime) //Checks if endTime is in between a task
+			{
+				System.out.println("End Time for new task intereferes with " + taskInList.getName());
+				return true;
+			}
+			else if(newTaskStartTime < taskStartTime && newTaskEndTime >= taskStartTime) //Checks if time interval has a task
+			{
+				System.out.println("The task overlaps with " + taskInList.getName());
+				return true;
+			}
+			System.out.println(newTaskEndTime + " " + taskStartTime);
+			return false;
+		}
+		
+		//Check if new Transient Task overlaps with recurring tasks
+		private boolean checkRecurringOverlap(Task newTask, Recurring RTask) {
+			LocalDate tempDate = RTask.getStartDate();
+			boolean case1 = false, returnCase = false;
+			
+			while(case1 == false) {
+				if(tempDate.isBefore(newTask.getStartDate()))
+				{
+					tempDate = tempDate.plusDays(RTask.getFrequency());
+				}
+				else if(tempDate.equals(newTask.getStartDate()) && checkTimeOverlap(newTask,RTask))
+				{
+					returnCase = true;
+					case1 = true;
+				}
+				else
+					case1 = true;
+			}
+			return returnCase;
+		}
+		
+		//Checks if new Recurring Task overlaps other recurring tasks
+		private boolean checkNewRecurringOverlap(Recurring newRTask, Recurring taskInList)
+		{
+			LocalDate tempNewDate = newRTask.getStartDate(), tempTaskDate = taskInList.getStartDate(); //Declare LocalTime variables to increment dates
+			boolean case1 = false, case2 = false, case3 = false, returnCase = false; //Cases for while loop
+			
+			if(newRTask.getStartDate().isAfter(taskInList.getEndDate())) //Checks if new Recurring Task occurs after period of Recurring Tasks
+				return false;
+			else if(newRTask.getEndDate().isBefore(taskInList.getStartDate())) //Checks if new Recurring Task occurs before start period of Recurring Tasks
+				return false;
+			while(case1 == false) {
+				if(tempNewDate.isBefore(tempTaskDate) && tempNewDate.isBefore(taskInList.getEndDate())) { //Checks to make sure date is not over a task's endDate
+					tempNewDate = tempNewDate.plusDays(newRTask.getFrequency()); //Increase Date by its frequency
+					if(tempNewDate.isAfter(taskInList.getEndDate()))             //Check if passed task's endDate
+						case2 = true;
+				}
+				else if(tempNewDate.isAfter(tempTaskDate) && tempTaskDate.isBefore(newRTask.getEndDate())) { //Checks if task is not over new task's endDate
+					tempTaskDate = tempTaskDate.plusDays(taskInList.getFrequency());
+					if(tempTaskDate.isAfter(newRTask.getEndDate()))
+						case3 = true;
+				}
+				else if(tempNewDate.equals(tempTaskDate) && checkTimeOverlap(newRTask,taskInList)) { //Check if date and time overlap
+					returnCase = true;
+					case1 = true;
+				}
+				else if(case2 && case3) //If no overlap exists
+					case1 = true;
+				else if(tempNewDate.equals(tempTaskDate) && !checkTimeOverlap(newRTask,taskInList)) //Check if date overlaps but time does not
+					case1 = true;
+			}
+			return returnCase;
+		}
+		
 }

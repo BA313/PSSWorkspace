@@ -175,18 +175,18 @@ public class MonthView extends AbstractMenu {
     public void drawTasks() {
         for(Task task : control.getMonthYearTasks(date)) {
         	if(task.getType().equals(Task.RECURRING_TASK)){
-        		
+        		Recurring RTask = (Recurring)task;
         		LocalDate current = task.getStartDate();
         		//CASE start in last month but end in this month
         		while(current.getMonthValue() < date.getMonthValue() || current.getYear() < date.getYear()) {
-        			current = current.plusWeeks(1);
+        			current = current.plusDays(RTask.getFrequency());
         		}
         		//CASE start and end in same month
     			//CASE start in month but end in next month
         		while((current.isBefore(task.getEndDate()) || current.isEqual(task.getEndDate())) 
         				&& current.getMonthValue() == date.getMonthValue()) {
         			draw(current.getDayOfMonth(), task);
-        			current = current.plusWeeks(1);
+        			current = current.plusDays(RTask.getFrequency());
         		}
         	}else {
         			draw(task.getStartDate().getDayOfMonth(), task);

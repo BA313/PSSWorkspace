@@ -68,9 +68,4 @@ public class Task {
     	return suppressed = s;
     }
     
-    public boolean checkDuration() {
-    	if(duration % 15 != 0)
-    		return false;
-    	return true;
-    }
 }
