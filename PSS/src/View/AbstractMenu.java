@@ -49,7 +49,7 @@ public abstract class AbstractMenu {
 	protected int numOfWeeks, firstDay;
 	protected Button left, right, addTask, close, create, cancelTask, delete;
 	protected final int MINI_SIZE = 35;
-	protected TextField name, duration;
+	protected TextField name, duration, frequency;
 	protected CheckBox repeat;
 	protected DatePicker startDate, endDate;
 	protected Spinner<LocalTime> startTime;
@@ -180,6 +180,7 @@ public abstract class AbstractMenu {
         repeat = new CheckBox("Repeat");
         startDate = new DatePicker(date);
         endDate = new DatePicker(date);
+        frequency = new TextField();
         
         startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
             @Override
@@ -222,15 +223,28 @@ public abstract class AbstractMenu {
             }
         });
         
+        frequency.setText("1");
+        
+        //only allow numbers to be entered into the frequency field
+        frequency.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    frequency.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+        
         //add labels for name and duration text fields
         Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
                 startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
-                startTimeLabel = new Label("Start Time: ", startTime);
+                startTimeLabel = new Label("Start Time: ", startTime), frequencyLabel = new Label("Frequency (Days): ", frequency);
         nameLabel.setContentDisplay(ContentDisplay.RIGHT);
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
         startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         startTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
+        frequencyLabel.setContentDisplay(ContentDisplay.RIGHT);
         
         //group buttons together
         HBox buttons = new HBox(10);
@@ -238,20 +252,23 @@ public abstract class AbstractMenu {
         buttons.getChildren().addAll(close, create);
         
         endDateLabel.setVisible(false);
+        frequencyLabel.setVisible(false);
         
         //listener to show end date selector if set to repeat
         repeat.selectedProperty().addListener(v -> {
            if(repeat.isSelected()) {
                endDateLabel.setVisible(true);
+               frequencyLabel.setVisible(true);
            } else {
                endDateLabel.setVisible(false);
+               frequencyLabel.setVisible(false);
            }
         });
         
         //build final pane
         VBox taskPane = new VBox(10);
         taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, buttons);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, frequencyLabel, buttons);
         taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
@@ -268,7 +285,7 @@ public abstract class AbstractMenu {
         		}
         	}catch(Exception e){
         		//check for errors
-        		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration is not empty");
+        		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration or frequency is not empty");
         		done = false;
         	}
         	//close and refresh page if done
@@ -294,7 +311,6 @@ public abstract class AbstractMenu {
         repeat = new CheckBox("Repeat");
         startDate = new DatePicker(task.getStartDate());
         endDate = new DatePicker(task.getEndDate());
-        
         
         startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
             @Override
@@ -334,15 +350,31 @@ public abstract class AbstractMenu {
             }
         });
         
+        if(task.getType() == Task.RECURRING_TASK) {
+            Recurring RTask = (Recurring) task;
+            frequency = new TextField(Integer.toString(RTask.getFrequency()));
+        //only allow numbers to be entered into the frequency field
+        frequency.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    frequency.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+        }
+        
         //add labels for name and duration text fields
         Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
                 startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
-                startTimeLabel = new Label("Start Time: ", startTime);
+                startTimeLabel = new Label("Start Time: ", startTime), frequencyLabel = new Label("Frequency (Days): ", frequency);
         nameLabel.setContentDisplay(ContentDisplay.RIGHT);
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
         startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         endDateLabel.setVisible(false);
+        frequencyLabel.setContentDisplay(ContentDisplay.RIGHT);
+        frequencyLabel.setVisible(false);
         
         //group buttons together
         HBox buttons = new HBox(10);
@@ -352,23 +384,27 @@ public abstract class AbstractMenu {
         //show/hide end date selector based on whether the task is set to repeat
         if(task.getRepeat()) {
             endDateLabel.setVisible(true);
+            frequencyLabel.setVisible(true);
         } else {
             endDateLabel.setVisible(false);
+            frequencyLabel.setVisible(false);
         }
         
         //listener to show end date selector if set to repeat
         repeat.selectedProperty().addListener(v -> {
            if(repeat.isSelected()) {
                endDateLabel.setVisible(true);
+               frequencyLabel.setVisible(true);
            } else {
                endDateLabel.setVisible(false);
+               frequencyLabel.setVisible(false);
            }
         });
         
         //build final pane
         VBox taskPane = new VBox(10);
         taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, buttons);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, frequencyLabel, buttons);
         taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
@@ -386,7 +422,7 @@ public abstract class AbstractMenu {
         		}
         	}catch(Exception e){
         		//check for errors
-        		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration is not empty");
+        		popupError("Error Adding Task: \n" + e.getMessage() + "\nMake sure duration or frequency is not empty");
         		done = false;
         	}
         	//close and refresh page if done
@@ -462,7 +498,7 @@ public abstract class AbstractMenu {
 	
 	private Task createRTask() {
 		Recurring newTask = new Recurring(getName(), getStartDate(), getEndDate(), getDuration(),
-    			getRepeat(), getStartTime(), 7);
+    			getRepeat(), getStartTime(), getFrequency());
     	return newTask;
 	}
 	
@@ -536,5 +572,9 @@ public abstract class AbstractMenu {
     
     public ComboBox<String> getSelect() {
         return select;
+    }
+    
+    public int getFrequency() {
+    	return Integer.parseInt(frequency.getText());
     }
 }

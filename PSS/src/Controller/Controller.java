@@ -184,10 +184,15 @@ public class Controller {
 		
 		//Verifies that times do not collide
 		private boolean checkTimeOverlap(Task newTask, Task taskInList) {
-			int taskStartTime = taskInList.getStartTime().getHour()*100+taskInList.getStartTime().getMinute(); //Converts LocalTime to int of 2400 format
+			int taskStartTime = taskInList.getStartTime().getHour()*100 + taskInList.getStartTime().getMinute(); //Converts LocalTime to int of 2400 format
 			int taskEndTime = taskStartTime + taskInList.getDuration()/60*100 + taskInList.getDuration()%60; //Get end time by adding duration and convert minutes to hours
-			int newTaskStartTime = newTask.getStartTime().getHour()*100+newTask.getStartTime().getMinute(); //Convert LocalTime to int of 2400 format
+			int newTaskStartTime = newTask.getStartTime().getHour()*100 + newTask.getStartTime().getMinute(); //Convert LocalTime to int of 2400 format
 			int newTaskEndTime = newTaskStartTime + newTask.getDuration()/60*100 + newTask.getDuration()%60; //Get end time by adding duration and convert minutes to hours
+			
+			if(taskEndTime % 100 >= 60) //Checks if EndTime has minutes of 60
+				taskEndTime += 100 - 60;
+			if(newTaskEndTime % 100 >= 60) //Checks if EndTime has 60 minutes
+				newTaskEndTime += 100 - 60;
 			
 			if(newTask.getStartTime().equals(taskInList.getStartTime())) //Check if same startTime
 			{
@@ -204,11 +209,12 @@ public class Controller {
 				System.out.println("End Time for new task intereferes with " + taskInList.getName());
 				return true;
 			}
-			else if(newTaskStartTime < taskStartTime && newTaskEndTime > taskEndTime) //Checks if time interval has a task
+			else if(newTaskStartTime < taskStartTime && newTaskEndTime >= taskStartTime) //Checks if time interval has a task
 			{
 				System.out.println("The task overlaps with " + taskInList.getName());
 				return true;
 			}
+			System.out.println(newTaskEndTime + " " + taskStartTime);
 			return false;
 		}
 		
@@ -260,7 +266,7 @@ public class Controller {
 				}
 				else if(case2 && case3) //If no overlap exists
 					case1 = true;
-				else if(tempNewDate.equals(tempTaskDate) && !checkTimeOverlap(newRTask,taskInList)) //Check if date and time overlap
+				else if(tempNewDate.equals(tempTaskDate) && !checkTimeOverlap(newRTask,taskInList)) //Check if date overlaps but time does not
 					case1 = true;
 			}
 			return returnCase;
