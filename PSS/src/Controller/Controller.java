@@ -76,11 +76,16 @@ public class Controller {
 					continue;
 				}
 				if(task.getType().equals(Task.RECURRING_TASK)) {
-					if(start.isBefore(date.plusMonths(1)) && end.isAfter(date.minusMonths(1))) {
-						if(!(end.getMonthValue() == m && d > end.getDayOfMonth()) 
-								&& !(start.getMonthValue() == m && d < start.getDayOfMonth())) {
-							if(date.getDayOfWeek() == start.getDayOfWeek())
-								dayTasks.add(task);
+					if(start.isBefore(date)&& (end.isAfter(date) || end.equals(date))) { //Check if current day is within start and end Date
+						Recurring RTask = (Recurring)task;
+						
+						while(start.getMonthValue() <= m && start.getYear() <= y) { //Loop exceed month
+							if(start.getDayOfMonth() == d && start.getMonthValue() == m && start.getYear() == y) { //if exact date is found 
+								Task newTask = new Task(task.getName(),task.getType(),start,task.getEndDate(),task.getDuration(),task.getRepeat(),task.getStartTime());
+								dayTasks.add(newTask);
+								break;
+							}
+							start = start.plusDays(RTask.getFrequency()); //Increment recurring task by frequency
 						}
 					}
 				}
@@ -106,6 +111,8 @@ public class Controller {
 				}
 				//tests for recurring tasks
 				if(task.getType().equals(Task.RECURRING_TASK)) {
+					Recurring RTask = (Recurring)task;
+					
 					//check if week is in the month range
 					if(start.isBefore(date.plusMonths(1)) && end.isAfter(date.minusMonths(1))) {
 						//check if the endDate is in this month
@@ -117,7 +124,7 @@ public class Controller {
 									weekTasks.add(task);
 									break;
 								}
-								end = end.minusWeeks(1);
+								end = end.minusDays(RTask.getFrequency());
 							}
 						//already checked if the start date is in the week
 						}else if(start.getMonthValue() == m) {
@@ -127,7 +134,7 @@ public class Controller {
 									weekTasks.add(task);
 									break;
 								}
-								start = start.plusWeeks(1);
+								start = start.plusDays(RTask.getFrequency());
 							}
 						}else {
 							weekTasks.add(task);
