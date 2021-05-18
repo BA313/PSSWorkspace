@@ -22,7 +22,11 @@ public class Controller {
 			//taskList = JsonReader.readTaskList(testFilepath+"testTasks.json");
 			taskList = JsonReader.readStandardTaskList(filepath+"Set1.json");
 		}
-		
+
+		public String getFilepath() {
+			return filepath;
+		}
+
 		public ArrayList<Task> getTasks() {
 			return taskList;
 		}

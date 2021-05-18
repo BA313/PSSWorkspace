@@ -1,3 +1,4 @@
+import Model.JsonWriter;
 import javafx.application.Application;
 import java.util.ArrayList;
 import Controller.Controller;
@@ -18,6 +19,7 @@ public class PSS extends Application {
     private Stage stage;
     private LocalDate date;
     public Controller control;
+    private String filepath;
     
     public static void main(String[] args) {
         launch(args);
@@ -53,7 +55,14 @@ public class PSS extends Application {
         month.getAddTask().setOnAction(v -> {
             month.addTask();
         });
-        
+
+        filepath = control.getFilepath();
+        // Save TaskList to a Json file when closing
+        stage.setOnCloseRequest(event -> {
+            new JsonWriter().writeTaskList(filepath + "Data.json", control.getTasks());
+
+        });
+
         stage.show();
     }
     

@@ -1,0 +1,104 @@
+[
+  {
+    "frequency": 7,
+    "name": "CS3560-Tu",
+    "type": "Repeat",
+    "category": "Class",
+    "startDate": {
+      "year": 2021,
+      "month": 4,
+      "day": 14
+    },
+    "endDate": {
+      "year": 2021,
+      "month": 5,
+      "day": 5
+    },
+    "startTime": {
+      "hour": 19,
+      "minute": 0,
+      "second": 0,
+      "nano": 0
+    },
+    "duration": 75,
+    "id": 0,
+    "repeat": true,
+    "suppressed": false
+  },
+  {
+    "frequency": 7,
+    "name": "CS3560-Th",
+    "type": "Repeat",
+    "category": "Class",
+    "startDate": {
+      "year": 2021,
+      "month": 4,
+      "day": 16
+    },
+    "endDate": {
+      "year": 2021,
+      "month": 5,
+      "day": 7
+    },
+    "startTime": {
+      "hour": 19,
+      "minute": 0,
+      "second": 0,
+      "nano": 0
+    },
+    "duration": 75,
+    "id": 0,
+    "repeat": true,
+    "suppressed": false
+  },
+  {
+    "name": "Skip For Visit",
+    "type": "Cancellation",
+    "category": "Cancellation",
+    "startDate": {
+      "year": 2021,
+      "month": 4,
+      "day": 28
+    },
+    "endDate": {
+      "year": 2021,
+      "month": 5,
+      "day": 17
+    },
+    "startTime": {
+      "hour": 19,
+      "minute": 0,
+      "second": 0,
+      "nano": 0
+    },
+    "duration": 75,
+    "id": 0,
+    "repeat": false,
+    "suppressed": false
+  },
+  {
+    "name": "Intern Interview",
+    "type": "Transient",
+    "category": "Appointment",
+    "startDate": {
+      "year": 2021,
+      "month": 4,
+      "day": 28
+    },
+    "endDate": {
+      "year": 2021,
+      "month": 5,
+      "day": 17
+    },
+    "startTime": {
+      "hour": 17,
+      "minute": 0,
+      "second": 0,
+      "nano": 0
+    },
+    "duration": 150,
+    "id": 0,
+    "repeat": false,
+    "suppressed": false
+  }
+]
