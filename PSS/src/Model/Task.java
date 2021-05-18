@@ -2,6 +2,7 @@ package Model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class Task {
 	
@@ -27,6 +28,28 @@ public class Task {
         this.duration = duration;
         this.repeat = repeat;
         this.startTime = startTime;
+    }
+    
+    public StandardTask convertToStandardTask() {
+    			int formattedStartDate = Integer.parseInt(getStartDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+    			int formattedEndDate = Integer.parseInt(getStartDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+    			int formattedStartTime = getStartTime().getHour()*100;
+    			float formattedDuration = (float)getDuration() / 60;
+    			
+    			if(getStartTime().getMinute() != 0) {
+    				formattedStartTime += getStartTime().getMinute();
+    			}
+    			else {
+    				formattedStartTime /= 100;
+    			}
+    			
+    			if(!getRepeat()) {
+    				return new StandardTask(getName(),getCategory(), formattedStartDate,formattedStartTime,formattedDuration,formattedEndDate,0);
+    			}
+    			else {
+    				Recurring RTask = (Recurring)this;
+    				return new StandardTask(getName(),getCategory(), formattedStartDate,formattedStartTime,formattedDuration,formattedEndDate,RTask.getFrequency());
+    			}
     }
     
     public String getName() {

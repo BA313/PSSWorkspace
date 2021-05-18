@@ -15,7 +15,8 @@ public class JsonWriter {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
             Writer writer = Files.newBufferedWriter(Paths.get(filePath));
-            gson.toJson(taskArrayList, writer);
+            for(Task tasks : taskArrayList)
+            	gson.toJson(tasks.convertToStandardTask(), writer);
             writer.close();
 
         } catch (Exception e) {

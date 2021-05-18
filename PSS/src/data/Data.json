@@ -1,104 +1,33 @@
-[
-  {
-    "frequency": 7,
-    "name": "CS3560-Tu",
-    "type": "Repeat",
-    "category": "Class",
-    "startDate": {
-      "year": 2021,
-      "month": 4,
-      "day": 14
-    },
-    "endDate": {
-      "year": 2021,
-      "month": 5,
-      "day": 5
-    },
-    "startTime": {
-      "hour": 19,
-      "minute": 0,
-      "second": 0,
-      "nano": 0
-    },
-    "duration": 75,
-    "id": 0,
-    "repeat": true,
-    "suppressed": false
-  },
-  {
-    "frequency": 7,
-    "name": "CS3560-Th",
-    "type": "Repeat",
-    "category": "Class",
-    "startDate": {
-      "year": 2021,
-      "month": 4,
-      "day": 16
-    },
-    "endDate": {
-      "year": 2021,
-      "month": 5,
-      "day": 7
-    },
-    "startTime": {
-      "hour": 19,
-      "minute": 0,
-      "second": 0,
-      "nano": 0
-    },
-    "duration": 75,
-    "id": 0,
-    "repeat": true,
-    "suppressed": false
-  },
-  {
-    "name": "Skip For Visit",
-    "type": "Cancellation",
-    "category": "Cancellation",
-    "startDate": {
-      "year": 2021,
-      "month": 4,
-      "day": 28
-    },
-    "endDate": {
-      "year": 2021,
-      "month": 5,
-      "day": 17
-    },
-    "startTime": {
-      "hour": 19,
-      "minute": 0,
-      "second": 0,
-      "nano": 0
-    },
-    "duration": 75,
-    "id": 0,
-    "repeat": false,
-    "suppressed": false
-  },
-  {
-    "name": "Intern Interview",
-    "type": "Transient",
-    "category": "Appointment",
-    "startDate": {
-      "year": 2021,
-      "month": 4,
-      "day": 28
-    },
-    "endDate": {
-      "year": 2021,
-      "month": 5,
-      "day": 17
-    },
-    "startTime": {
-      "hour": 17,
-      "minute": 0,
-      "second": 0,
-      "nano": 0
-    },
-    "duration": 150,
-    "id": 0,
-    "repeat": false,
-    "suppressed": false
-  }
-]
+{
+  "Name": "CS3560-Tu",
+  "Type": "Class",
+  "StartDate": 20210414,
+  "StartTime": 19,
+  "Duration": 1.25,
+  "EndDate": 20210414,
+  "Frequency": 7
+}{
+  "Name": "CS3560-Th",
+  "Type": "Class",
+  "StartDate": 20210416,
+  "StartTime": 19,
+  "Duration": 1.25,
+  "EndDate": 20210416,
+  "Frequency": 7
+}{
+  "Name": "Skip For Visit",
+  "Type": "Cancellation",
+  "StartDate": 20210428,
+  "StartTime": 19,
+  "Duration": 1.25,
+  "EndDate": 20210428,
+  "Frequency": 0
+}{
+  "Name": "Intern Interview",
+  "Type": "Appointment",
+  "StartDate": 20210428,
+  "StartTime": 17,
+  "Duration": 2.5,
+  "EndDate": 20210428,
+  "Frequency": 0
+}
