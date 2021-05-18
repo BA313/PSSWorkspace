@@ -18,9 +18,10 @@ public class Task {
     private boolean repeat;
     private boolean suppressed;
     
-    public Task(String name,String type, LocalDate startDate, LocalDate endDate, int duration, boolean repeat, LocalTime startTime) {
+    public Task(String name,String type, String category, LocalDate startDate, LocalDate endDate, int duration, boolean repeat, LocalTime startTime) {
         this.name = name;
         this.type = type;
+        this.category = category;
         this.startDate = startDate;
         this.endDate = endDate;
         this.duration = duration;

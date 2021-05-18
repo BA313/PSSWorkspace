@@ -227,8 +227,8 @@ public abstract class AbstractMenu {
         });
         
         //default create choice box for transient task
-        choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
-        choiceBox.setValue("Course");
+        choiceBox.getItems().addAll("Visit","Shopping","Appointment");
+        choiceBox.setValue("Visit");
         
         frequency.setText("1");
         
@@ -268,15 +268,15 @@ public abstract class AbstractMenu {
            if(repeat.isSelected()) {
                endDateLabel.setVisible(true);
                frequencyLabel.setVisible(true);
-               choiceBox.getItems().removeAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
-               choiceBox.getItems().addAll("Visit","Shopping","Appointment");
-               choiceBox.setValue("Visit");
+               choiceBox.getItems().removeAll("Visit","Shopping","Appointment");
+               choiceBox.getItems().addAll("Class", "Study", "Sleep", "Exercise", "Work", "Meal");
+               choiceBox.setValue("Class");
            } else {
                endDateLabel.setVisible(false);
                frequencyLabel.setVisible(false);
-               choiceBox.getItems().removeAll("Visit","Shopping","Appointment");
-               choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
-               choiceBox.setValue("Course");
+               choiceBox.getItems().removeAll("Class", "Study", "Sleep", "Exercise", "Work", "Meal");
+               choiceBox.getItems().addAll("Visit","Shopping","Appointment");
+               choiceBox.setValue("Visit");
            }
         });
         
@@ -367,21 +367,21 @@ public abstract class AbstractMenu {
         });
         
         //default create choice box for transient task
-        choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
-        choiceBox.setValue("Course");
+        choiceBox.getItems().addAll("Visit","Shopping","Appointment");
+        choiceBox.setValue("Visit");
         
         if(task.getType() == Task.RECURRING_TASK) {
-            Recurring RTask = (Recurring) task;
-            frequency = new TextField(Integer.toString(RTask.getFrequency()));
-        //only allow numbers to be entered into the frequency field
-        frequency.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*")) {
-                    frequency.setText(newValue.replaceAll("[^\\d]", ""));
-                }
-            }
-        });
+        	Recurring RTask = (Recurring) task;
+        	frequency = new TextField(Integer.toString(RTask.getFrequency()));
+        	//only allow numbers to be entered into the frequency field
+        	frequency.textProperty().addListener(new ChangeListener<String>() {
+        		@Override
+        		public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        			if (!newValue.matches("\\d*")) {
+        				frequency.setText(newValue.replaceAll("[^\\d]", ""));
+        			}
+        		}
+        	});
         }
         
         //add labels for name and duration text fields
@@ -398,6 +398,10 @@ public abstract class AbstractMenu {
         frequencyLabel.setVisible(false);
         choiceBoxLabel.setContentDisplay(ContentDisplay.RIGHT);
         
+        if(task.getType() == Task.ANTI_TASK) { 
+        	choiceBoxLabel.setVisible(false);
+        }
+        
         //group buttons together
         HBox buttons = new HBox(10);
         buttons.setAlignment(Pos.CENTER);
@@ -407,15 +411,16 @@ public abstract class AbstractMenu {
         if(task.getRepeat()) {
             endDateLabel.setVisible(true);
             frequencyLabel.setVisible(true);
-            choiceBox.getItems().removeAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
-            choiceBox.getItems().addAll("Visit","Shopping","Appointment");
-            choiceBox.setValue("Visit");
+            choiceBox.getItems().removeAll("Class", "Study", "Sleep", "Exercise", "Work", "Meal","Visit","Shopping","Appointment");
+            choiceBox.getItems().addAll("Class", "Study", "Sleep", "Exercise", "Work", "Meal");
+            choiceBox.setValue(task.getCategory());
+
         } else {
             endDateLabel.setVisible(false);
             frequencyLabel.setVisible(false);
-            choiceBox.getItems().removeAll("Visit","Shopping","Appointment");
-            choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
-            choiceBox.setValue("Course");
+            choiceBox.getItems().removeAll("Class", "Study", "Sleep", "Exercise", "Work", "Meal","Visit","Shopping","Appointment");
+            choiceBox.getItems().addAll("Visit","Shopping","Appointment");
+            choiceBox.setValue(task.getCategory());
         }
         
         //listener to show end date selector if set to repeat
@@ -423,22 +428,21 @@ public abstract class AbstractMenu {
            if(repeat.isSelected()) {
                endDateLabel.setVisible(true);
                frequencyLabel.setVisible(true);
-               choiceBox.getItems().removeAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
-               choiceBox.getItems().addAll("Visit","Shopping","Appointment");
-               choiceBox.setValue("Visit");
+               choiceBox.getItems().removeAll("Class", "Study", "Sleep", "Exercise", "Work", "Meal","Visit","Shopping","Appointment");
+               choiceBox.getItems().addAll("Class", "Study", "Sleep", "Exercise", "Work", "Meal");
+               choiceBox.setValue(task.getCategory());
            } else {
                endDateLabel.setVisible(false);
                frequencyLabel.setVisible(false);
-               choiceBox.getItems().removeAll("Visit","Shopping","Appointment");
-               choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
-               choiceBox.setValue("Course");
+               choiceBox.getItems().removeAll("Class", "Study", "Sleep", "Exercise", "Work", "Meal","Visit","Shopping","Appointment");
+               choiceBox.getItems().addAll("Visit","Shopping","Appointment");
+               choiceBox.setValue(task.getCategory());
            }
         });
-        
         //build final pane
         VBox taskPane = new VBox(10);
         taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, choiceBox, repeat, endDateLabel, frequencyLabel, buttons);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, choiceBoxLabel, repeat, endDateLabel, frequencyLabel, buttons);
         taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
@@ -525,19 +529,19 @@ public abstract class AbstractMenu {
 	public abstract void drawTasks();
 	
 	private Task createTTask() {
-		Transient newTask = new Transient(getName(), getStartDate(), getEndDate(), getDuration(),
+		Transient newTask = new Transient(getName(), getTaskCategory(), getStartDate(), getEndDate(), getDuration(),
     			getRepeat(), getStartTime());
     	return newTask;
 	}
 	
 	private Task createRTask() {
-		Recurring newTask = new Recurring(getName(), getStartDate(), getEndDate(), getDuration(),
+		Recurring newTask = new Recurring(getName(), getTaskCategory(), getStartDate(), getEndDate(), getDuration(),
     			getRepeat(), getStartTime(), getFrequency());
     	return newTask;
 	}
 	
 	private Task createATask(Task task) {
-		Anti newTask = new Anti(getName(), getStartDate(), getEndDate(), getDuration(),
+		Anti newTask = new Anti(getName(), "Cancellation", getStartDate(), getEndDate(), getDuration(),
     			getRepeat(), getStartTime(), task);
     	return newTask;
 	}
@@ -584,7 +588,7 @@ public abstract class AbstractMenu {
 	    return name.getText();
 	}
     
-    public String getTaskType() {
+    public String getTaskCategory() {
     	return choiceBox.getValue();
     }
     

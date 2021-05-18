@@ -81,7 +81,7 @@ public class Controller {
 						
 						while(start.getMonthValue() <= m && start.getYear() <= y) { //Loop exceed month
 							if(start.getDayOfMonth() == d && start.getMonthValue() == m && start.getYear() == y) { //if exact date is found 
-								Task newTask = new Task(task.getName(),task.getType(),start,task.getEndDate(),task.getDuration(),task.getRepeat(),task.getStartTime());
+								Task newTask = new Task(task.getName(),task.getType(),task.getCategory(),start,task.getEndDate(),task.getDuration(),task.getRepeat(),task.getStartTime());
 								dayTasks.add(newTask);
 								break;
 							}

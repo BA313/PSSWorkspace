@@ -7,9 +7,9 @@ public class Anti extends Task {
 	
 	private Task canceledTask;
 	
-	public Anti(String name, LocalDate startDate, LocalDate endDate, int duration, 
+	public Anti(String name, String category, LocalDate startDate, LocalDate endDate, int duration, 
 			boolean repeat, LocalTime startTime, Task task) {
-		super(name, ANTI_TASK, startDate, endDate, duration, repeat, startTime);
+		super(name, ANTI_TASK, "Cancellation", startDate, endDate, duration, repeat, startTime);
 		canceledTask = task;
 		try {
 		cancelTask(task);

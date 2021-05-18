@@ -35,11 +35,11 @@ public class StandardTask {
         boolean repeat = Frequency != 0;
         String type = Type;
         if(repeat) {
-        	return new Recurring(Name, startDate, endDate, (int)newDuration, repeat, startTime, Frequency);
+        	return new Recurring(Name, Type, startDate, endDate, (int)newDuration, repeat, startTime, Frequency);
         }else if(!type.equals(Task.ANTI_TASK)) {
-        	return new Transient(Name, startDate, endDate, (int)newDuration, repeat, startTime);
+        	return new Transient(Name, Type, startDate, endDate, (int)newDuration, repeat, startTime);
         }else {
-        	return new Anti(Name, startDate, endDate, (int)newDuration, repeat, startTime, null);
+        	return new Anti(Name, Type, startDate, endDate, (int)newDuration, repeat, startTime, null);
         }
         
     }
