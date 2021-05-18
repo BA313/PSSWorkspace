@@ -221,7 +221,6 @@ public class Controller {
 				System.out.println("The task overlaps with " + taskInList.getName());
 				return true;
 			}
-			System.out.println(newTaskEndTime + " " + taskStartTime);
 			return false;
 		}
 		

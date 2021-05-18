@@ -19,6 +19,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.DatePicker;
@@ -53,6 +54,7 @@ public abstract class AbstractMenu {
 	protected CheckBox repeat;
 	protected DatePicker startDate, endDate;
 	protected Spinner<LocalTime> startTime;
+	protected ChoiceBox<String> choiceBox;
 	
 	//constructor to load into present date
 	public AbstractMenu() {
@@ -181,6 +183,7 @@ public abstract class AbstractMenu {
         startDate = new DatePicker(date);
         endDate = new DatePicker(date);
         frequency = new TextField();
+        choiceBox = new ChoiceBox<>();
         
         startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
             @Override
@@ -223,6 +226,10 @@ public abstract class AbstractMenu {
             }
         });
         
+        //default create choice box for transient task
+        choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
+        choiceBox.setValue("Course");
+        
         frequency.setText("1");
         
         //only allow numbers to be entered into the frequency field
@@ -238,13 +245,15 @@ public abstract class AbstractMenu {
         //add labels for name and duration text fields
         Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
                 startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
-                startTimeLabel = new Label("Start Time: ", startTime), frequencyLabel = new Label("Frequency (Days): ", frequency);
+                startTimeLabel = new Label("Start Time: ", startTime), frequencyLabel = new Label("Frequency (Days): ", frequency),
+                choiceBoxLabel = new Label("Task Category: ", choiceBox);
         nameLabel.setContentDisplay(ContentDisplay.RIGHT);
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
         startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         endDateLabel.setContentDisplay(ContentDisplay.RIGHT);
         startTimeLabel.setContentDisplay(ContentDisplay.RIGHT);
         frequencyLabel.setContentDisplay(ContentDisplay.RIGHT);
+        choiceBoxLabel.setContentDisplay(ContentDisplay.RIGHT);
         
         //group buttons together
         HBox buttons = new HBox(10);
@@ -259,16 +268,22 @@ public abstract class AbstractMenu {
            if(repeat.isSelected()) {
                endDateLabel.setVisible(true);
                frequencyLabel.setVisible(true);
+               choiceBox.getItems().removeAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
+               choiceBox.getItems().addAll("Visit","Shopping","Appointment");
+               choiceBox.setValue("Visit");
            } else {
                endDateLabel.setVisible(false);
                frequencyLabel.setVisible(false);
+               choiceBox.getItems().removeAll("Visit","Shopping","Appointment");
+               choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
+               choiceBox.setValue("Course");
            }
         });
         
         //build final pane
         VBox taskPane = new VBox(10);
         taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, frequencyLabel, buttons);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, choiceBoxLabel, repeat, endDateLabel, frequencyLabel, buttons);
         taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
@@ -311,6 +326,7 @@ public abstract class AbstractMenu {
         repeat = new CheckBox("Repeat");
         startDate = new DatePicker(task.getStartDate());
         endDate = new DatePicker(task.getEndDate());
+        choiceBox = new ChoiceBox<>();
         
         startTime = new Spinner<>(new SpinnerValueFactory<LocalTime>() {
             @Override
@@ -350,6 +366,10 @@ public abstract class AbstractMenu {
             }
         });
         
+        //default create choice box for transient task
+        choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
+        choiceBox.setValue("Course");
+        
         if(task.getType() == Task.RECURRING_TASK) {
             Recurring RTask = (Recurring) task;
             frequency = new TextField(Integer.toString(RTask.getFrequency()));
@@ -367,7 +387,8 @@ public abstract class AbstractMenu {
         //add labels for name and duration text fields
         Label nameLabel = new Label("Name: ", name), durationLabel = new Label("Duration (Minutes): ", duration),
                 startDateLabel = new Label("Start Date: ", startDate), endDateLabel = new Label("End Date: ", endDate),
-                startTimeLabel = new Label("Start Time: ", startTime), frequencyLabel = new Label("Frequency (Days): ", frequency);
+                startTimeLabel = new Label("Start Time: ", startTime), frequencyLabel = new Label("Frequency (Days): ", frequency),
+                choiceBoxLabel = new Label("Task Type: ", choiceBox);
         nameLabel.setContentDisplay(ContentDisplay.RIGHT);
         durationLabel.setContentDisplay(ContentDisplay.RIGHT);
         startDateLabel.setContentDisplay(ContentDisplay.RIGHT);
@@ -375,6 +396,7 @@ public abstract class AbstractMenu {
         endDateLabel.setVisible(false);
         frequencyLabel.setContentDisplay(ContentDisplay.RIGHT);
         frequencyLabel.setVisible(false);
+        choiceBoxLabel.setContentDisplay(ContentDisplay.RIGHT);
         
         //group buttons together
         HBox buttons = new HBox(10);
@@ -385,9 +407,15 @@ public abstract class AbstractMenu {
         if(task.getRepeat()) {
             endDateLabel.setVisible(true);
             frequencyLabel.setVisible(true);
+            choiceBox.getItems().removeAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
+            choiceBox.getItems().addAll("Visit","Shopping","Appointment");
+            choiceBox.setValue("Visit");
         } else {
             endDateLabel.setVisible(false);
             frequencyLabel.setVisible(false);
+            choiceBox.getItems().removeAll("Visit","Shopping","Appointment");
+            choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
+            choiceBox.setValue("Course");
         }
         
         //listener to show end date selector if set to repeat
@@ -395,16 +423,22 @@ public abstract class AbstractMenu {
            if(repeat.isSelected()) {
                endDateLabel.setVisible(true);
                frequencyLabel.setVisible(true);
+               choiceBox.getItems().removeAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
+               choiceBox.getItems().addAll("Visit","Shopping","Appointment");
+               choiceBox.setValue("Visit");
            } else {
                endDateLabel.setVisible(false);
                frequencyLabel.setVisible(false);
+               choiceBox.getItems().removeAll("Visit","Shopping","Appointment");
+               choiceBox.getItems().addAll("Course", "Study", "Sleep", "Exercise", "Work", "Meal");
+               choiceBox.setValue("Course");
            }
         });
         
         //build final pane
         VBox taskPane = new VBox(10);
         taskPane.setAlignment(Pos.CENTER);
-        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, repeat, endDateLabel, frequencyLabel, buttons);
+        taskPane.getChildren().addAll(nameLabel, startDateLabel, startTimeLabel, durationLabel, choiceBox, repeat, endDateLabel, frequencyLabel, buttons);
         taskPane.setStyle("-fx-border-width: 1px; -fx-border-color: darkgray");
         
         BorderPane.setMargin(taskPane, new Insets(0.0, 10.0, 10.0, 0.0));
@@ -549,7 +583,11 @@ public abstract class AbstractMenu {
 	public String getName() {
 	    return name.getText();
 	}
-	
+    
+    public String getTaskType() {
+    	return choiceBox.getValue();
+    }
+    
 	public int getDuration() {
 	    return Integer.parseInt(duration.getText());
 	}
@@ -577,4 +615,5 @@ public abstract class AbstractMenu {
     public int getFrequency() {
     	return Integer.parseInt(frequency.getText());
     }
+
 }

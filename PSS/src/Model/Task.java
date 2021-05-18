@@ -11,6 +11,7 @@ public class Task {
 	
     private String name;
     private String type;
+    private String category;
     private LocalDate startDate, endDate;
     private LocalTime startTime;
     private int duration, id;
@@ -35,6 +36,10 @@ public class Task {
         return type;
     }
     
+    public String getCategory() {
+    	return category;
+    }
+    
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -42,7 +47,6 @@ public class Task {
     public LocalDate getEndDate() {
         return endDate;
     }
-    
     
     public int getDuration() {
         return duration;
